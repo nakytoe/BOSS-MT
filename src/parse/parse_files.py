@@ -29,20 +29,19 @@ def parse_to_json(config):
     # single experiments, like baselines
     if 'unique' in config:
         for experiment in config['unique']:
-            print(experiment)
             path = experiment['path']
             json_path = experiment['json_path']
             for file, name in zip(experiment['files'], experiment['names']):
                 save_to_json(path, file, name, json_path = json_path, json_name = None)
     if 'array' in config:
-        for experiment in array['unique']:
+        for experiment in config['array']:
             path = experiment['path']
             N = experiment['N_experiments']
             filebase = experiment['filebase']
             namebase = experiment['namebase']
             json_path = experiment['json_path']
             for i in range(1, N+1):
-                save_to_json(path,f'{filebase}{i}.out', f'{namebase}{i}',
+                save_to_json(path,f'{filebase}{i}/boss.out', f'{namebase}{i}',
                              json_path = json_path, json_name = None)     
 
 if __name__=='__main__':
