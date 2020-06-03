@@ -3,7 +3,7 @@ import json
 
 def parsevalues(line, cast = int, sep = None, idx = 1):
     return [cast(val.strip(sep)) for val in line.split(sep)[idx:]]
-def save_to_json(path, filename, expname,jsonpath = None, jsonname = None):
+def save_to_json(path, filename, expname,json_path = None, json_name = None):
     """
     Parse results ans save dict to json
     path: path to folder where boss.out is
@@ -13,11 +13,11 @@ def save_to_json(path, filename, expname,jsonpath = None, jsonname = None):
     jsonpath: path to folder where json file is to be stored, defaults to path
     """
     res = read_bossout(path, filename, expname)
-    if jsonname is None:
-            jsonname = expname
-    if jsonpath is None:
-            jsonpath = path
-    with open(f'{jsonpath}{jsonname}.json','w') as file:
+    if json_name is None:
+            json_name = expname
+    if json_path is None:
+            json_path = path
+    with open(f'{json_path}{json_name}.json','w') as file:
         json.dump(res,file)
                        
 def read_bossout(path, filename, expname):
@@ -87,13 +87,13 @@ def read_bossout(path, filename, expname):
             elif 'num_tasks' in line:
                 ret['num_tasks'] = parsevalues(line)[0]
     
-    ret['xy'] = np.array(xy)
-    ret['acqtime'] = np.array(acqtime)
-    ret['bestacq'] = np.array(bestacq)
-    ret['gmp'] = np.array(gmp)
-    ret['gmp_convergence'] = np.array(gmp_convergence)
-    ret['GP_hyperparam'] = np.array(gp_hyper)
-    ret['itertime'] = np.array(itertime)
-    ret['totaltime'] = np.array(totaltime)
+    ret['xy'] = xy
+    ret['acqtime'] = acqtime
+    ret['bestacq'] = bestacq
+    ret['gmp'] = gmp
+    ret['gmp_convergence'] = gmp_convergence
+    ret['GP_hyperparam'] = gp_hyper
+    ret['itertime'] = itertime
+    ret['totaltime'] = totaltime
     
     return ret
