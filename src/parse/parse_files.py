@@ -47,5 +47,5 @@ def parse_to_json(config):
 if __name__=='__main__':
     args = sys.argv
     with open(args[1],'r') as file:
-        config = yaml.load(file)
+        config = yaml.load(file, Loader=yaml.FullLoader)
         parse_to_json(config)
