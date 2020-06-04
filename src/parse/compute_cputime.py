@@ -3,33 +3,29 @@ import json
 import os, sys
 
 
-"""
----
-# yaml format for cpu time computing
-
-single_output: # baselines and single experiments
- -
-  path: # path to json files
-  names: str list # path to experiment names
-  single_core_times: float list # approximation acquisition time on single core
-  
-transfer_learning:
- -
-  path:
-  baselines:
-   - name of baseline 1
-   - 
-  N_experiments:
-  namebase:
-  single_core_time:
-   -
-
-"""
-
 def compute_cputime(experiment, exptype):
     """
     Function to read parsed boss.out json files, compute single core cpu time 
     approximations to those and save the results in the same file.
+    
+    ---
+    # yaml format for cpu time computing
+
+    single_output: # baselines and single experiments
+     -
+      path: # path to json files
+      names: str list # path to experiment names
+      single_core_times: float list # approximation acquisition time on single core
+
+    transfer_learning:
+     -
+      path:
+      baselines:
+       - name of baseline 1
+       - 
+      N_experiments:
+      namebase:
+      single_core_time:
     """
     path = os.path.expanduser(str(experiment['path']))
     if exptype == 'single_output':
@@ -43,6 +39,7 @@ def compute_cputime(experiment, exptype):
                 data['modeltime'] = [itertime-acqtime for itertime, acqtime in zip(data['itertime'], data['acqtime'])]
                 data['cputime'] = [sum(data['modeltime'][:i])+(i+1)*single_core_time for i in range(N)]
                 with open(f'{path}{name}.json', 'w') as file:
+                    print(f'Writing to file: {path}{name}.json')
                     json.dump(data, file)
             
     elif exptype == 'transfer_learning':
@@ -79,6 +76,7 @@ def compute_cputime(experiment, exptype):
                     data['cputime'].append(sum(data['modeltime'][:j])+(j+1)*single_core_time + init_cputime_sum)
                 
                 with open(f'{path}{name}{i}.json', 'w') as file:
+                    print(f'Writing to file: {path}{name}{i}.json')
                     json.dump(data, file)
         
         

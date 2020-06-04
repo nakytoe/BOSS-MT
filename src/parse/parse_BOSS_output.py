@@ -19,6 +19,7 @@ def save_to_json(path, filename, expname,json_path = None, json_name = None):
     if json_path is None:
             json_path = path
     with open(os.path.expanduser(f'{json_path}{json_name}.json'),'w') as file:
+        print(f'Writing to file: {json_path}{json_name}.json')
         json.dump(res,file)
                        
 def read_bossout(path, filename, expname):
