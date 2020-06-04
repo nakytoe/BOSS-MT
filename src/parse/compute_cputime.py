@@ -56,14 +56,14 @@ def compute_cputime(experiment, exptype):
                 initpts_list = data['initpts']
                 # load cpu times for initpts
                 for baseline, initpts in zip(experiment['baselines'], initpts_list):
-                    with open(f'{path}{baseline}','r') as file:
+                    with open(f'{path}{baseline}.json','r') as file:
                         data = json.load(file)
                         if 'cputime' in data:
                             initpts_cputimes.append(data['cputime'][:initpts])
                         else:
                             raise ValueError(f'cputime not computed for baseline: {path}{baseline}')
 
-                for j in range(initpts_cputimes[1]): # add cumulative cpu time to initpts
+                for j in range(len(initpts_cputimes[1])): # add cumulative cpu time to initpts
                     initpts_cputimes[1][j] += initpts_cputimes[0][-1]
                 
                 data['cputime'] = []
@@ -75,10 +75,10 @@ def compute_cputime(experiment, exptype):
                 single_core_time = experiment['single_core_time']
                 N = len(data['acqtime'])
                 data['modeltime'] = [itertime-acqtime for itertime, acqtime in zip(data['itertime'][-N:], data['acqtime'])]
-                for i in range(N):
-                    data['cputime'].append(sum(data['modeltime'][:i])+(i+1)*single_core_time + init_cputime_sum)
+                for j in range(N):
+                    data['cputime'].append(sum(data['modeltime'][:j])+(j+1)*single_core_time + init_cputime_sum)
                 
-                with open(f'{path}{name}{i}_cputime.json', 'w') as file:
+                with open(f'{path}{name}{i}.json', 'w') as file:
                     json.dump(data, file)
         
         
