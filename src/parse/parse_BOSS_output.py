@@ -1,5 +1,6 @@
 import numpy
 import json
+import os
 
 def parsevalues(line, cast = int, sep = None, idx = 1):
     return [cast(val.strip(sep)) for val in line.split(sep)[idx:]]
@@ -17,7 +18,7 @@ def save_to_json(path, filename, expname,json_path = None, json_name = None):
             json_name = expname
     if json_path is None:
             json_path = path
-    with open(f'{json_path}{json_name}.json','w') as file:
+    with open(os.path.expanduser(f'{json_path}{json_name}.json'),'w') as file:
         json.dump(res,file)
                        
 def read_bossout(path, filename, expname):
@@ -27,6 +28,7 @@ def read_bossout(path, filename, expname):
     filename: str, name of boss output file (boss.out)
     expname: str, descriptive name of the experiment
     """
+    path = os.path.expanduser(path)
     ret = {'name':expname,
             'initpts':None,
           'iterpts':None,
