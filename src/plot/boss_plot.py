@@ -89,19 +89,18 @@ def make_subplot(subplot, ax):
     experiments = []
     # plot baseline
     if subplot['baseline'] is not None:
-        print("HERE")
         baseline_file = subplot['baseline']
         baseline = load_json(path, baseline_file)
         add_plot_attributes(baseline, BASELINE_COLOR, BASELINE_LINESTYLE, BASELINE_MARKER)
         experiments.append(baseline)
     # plot an experiment
     if subplot['array_experiments'] is not None:
-        print("IT")
         array_experiments = subplot['array_experiments']
         N_experiments = array_experiments['N_experiments']
         for i in range(1, N_experiments+1):
             namebase = array_experiments['namebase']
             experiment = load_json(path, f'{namebase}{i}')
+            print(namebase)
             if array_experiments['use_colormap']:
                 initpts = experiment['initpts']
                 color = ARRAY_COLORMAP(initpts[0]/N_experiments*initpts[0])
@@ -116,17 +115,49 @@ def make_subplot(subplot, ax):
             unique = load_json(path, unique_name)
             add_plot_attributes(unique, UNIQUE_COLOR, UNIQUE_LINESTYLE, UNIQUE_MARKER)
             experiments.append(unique)
-    if subplot['legend']:
-        for experiment in experiments:
+    # add labels
+    for experiment in experiments:
+        if 'legend' in subplot and 'labelrule' in subplot:
             make_label(experiment, subplot['labelrule'])
+        else: experiment['label'] = None
 
     for experiment in experiments:
-        x = np.array(experiment[subplot['xkey']])[:5]
-        y = np.array(experiment[subplot['ykey']])[:5,subplot['ycol']]
-        color = experiment['color']
-        linestyle = experiment['linestyle']
-        marker = experiment['marker']
-        ax.plot(x,y, color = color, linestyle = linestyle, marker = marker)
+        # assign variable y
+        ykey = subplot['ykey'] # y name
+        ycol = subplot['ycol'] # y column
+        y = np.array(experiment[ykey])[:,ycol]
+        N_y = len(y)
+        # assign variable x
+        if 'xkey' in subplot:
+            xkey = subplot['xkey']
+            xcol = subplot['xcol']
+            x = experiment[xkey]
+            x = np.atleast_2d(x).reshape((len(x), -1))[-N_y:,xcol]
+        else:
+            x = np.arange(N_y)+1
+        
+        
+        # make plot
+        ax.plot(x,y, color = experiment['color'],
+         linestyle = experiment['linestyle'], 
+         marker = experiment['marker'], 
+         label = experiment['label'],
+         )
+    if 'xunit' in subplot:
+        ax.set_xlabel(subplot['xunit'])
+    
+    if 'yunit' in subplot:
+        ax.set_ylabel(subplot['yunit'])
+
+    if 'legend' in subplot and subplot['legend']:
+        location = None
+        if 'legend_location' in subplot:
+            location = subplot['legend_location']
+        ax.legend(loc = location)
+    
+    if 'remove_top_right_spines' in subplot and subplot['remove_top_right_spines']:
+        ax.spines['right'].set_visible(False)
+        ax.spines['top'].set_visible(False)
         
     
     
@@ -147,11 +178,13 @@ def main(config):
     """
     for figure in config['figures']: # make figure
         rows, cols = calculate_plotgrid(figure)
-        fig, axs = plt.subplots(rows, cols)
+        fig, axs = plt.subplots(rows, cols, figsize = (cols*5, rows*5))
         N_subplots = len(figure['subplots'])
         # add subplots
         for subplot, ax in zip(figure['subplots'], np.array(axs).flatten()[:N_subplots]):
             make_subplot(subplot, ax)
+        for ax in np.array(axs).flatten()[(N_subplots-rows*cols):]:
+            ax.axis('off')
         # save figure
         path = figure['path']
         name = figure['filename']
