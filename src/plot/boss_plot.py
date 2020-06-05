@@ -3,7 +3,7 @@ import json
 import yaml
 import numpy as np
 import os, sys
-
+import string
 
 # here make general function for plotting variables from boss experiment
 BASELINE_COLOR = '#ff0000' # RED
@@ -172,6 +172,8 @@ def calculate_plotgrid(figure):
     ncol = int(np.ceil(N_subplots / nrow))
     return nrow, ncol
 
+
+
 def main(config):
     """
     go through list of figures in config and plot them
@@ -181,8 +183,16 @@ def main(config):
         fig, axs = plt.subplots(rows, cols, figsize = (cols*5, rows*5))
         N_subplots = len(figure['subplots'])
         # add subplots
-        for subplot, ax in zip(figure['subplots'], np.array(axs).flatten()[:N_subplots]):
+        for subplot, ax, i in zip(figure['subplots'], np.array(axs).flatten()[:N_subplots],range(N_subplots)):
+            
+            title = ''
+            if 'enumerate_subplots' in figure and figure['enumerate_subplots']:
+                title = f'{title}{string.ascii_lowercase[i]})'
+            if 'title' in subplot:
+                titletext = subplot['title']
+                title = f'{title} {titletext}'
             make_subplot(subplot, ax)
+            ax.set_title(title, loc = 'left')
         for ax in np.array(axs).flatten()[(N_subplots-rows*cols):]:
             ax.axis('off')
         # save figure
