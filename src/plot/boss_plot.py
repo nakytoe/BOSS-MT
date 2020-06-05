@@ -88,13 +88,13 @@ def make_subplot(subplot, ax):
     baseline = None
     experiments = []
     # plot baseline
-    if subplot['baseline'] is not None:
+    if 'baseline' in subplot and subplot['baseline'] is not None:
         baseline_file = subplot['baseline']
         baseline = load_json(path, baseline_file)
         add_plot_attributes(baseline, BASELINE_COLOR, BASELINE_LINESTYLE, BASELINE_MARKER)
         experiments.append(baseline)
     # plot an experiment
-    if subplot['array_experiments'] is not None:
+    if 'array_experiments' in subplot and subplot['array_experiments'] is not None:
         array_experiments = subplot['array_experiments']
         N_experiments = array_experiments['N_experiments']
         for i in range(1, N_experiments+1):
@@ -109,7 +109,7 @@ def make_subplot(subplot, ax):
             add_plot_attributes(experiment, color, ARRAY_LINESTYLE, ARRAY_MARKER)
             experiments.append(experiment)
     # plot a unique experimennt
-    if subplot['unique_experiments'] is not None:
+    if 'unique_experiments' in subplot and subplot['unique_experiments'] is not None:
         print("BREAKS")
         for unique_name in subplot['unique_experiments']:
             unique = load_json(path, unique_name)
