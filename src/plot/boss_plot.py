@@ -172,8 +172,10 @@ def make_subplot(subplot, ax):
         location = None
         if 'legend_location' in subplot:
             location = subplot['legend_location']
-        ax.legend(loc = location)
-    
+        legend_title = None
+        if 'legend_title' in subplot:
+            legend_title = subplot['legend_title']
+        ax.legend(title = legend_title,loc = location)
 
     if 'remove_top_right_spines' in subplot and subplot['remove_top_right_spines']:
         ax.spines['right'].set_visible(False)
