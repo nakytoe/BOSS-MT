@@ -130,7 +130,6 @@ def make_subplot(subplot, ax):
         plottype = subplot['plottype']
 
     for experiment in experiments:
-        print(experiment['name'])
         # assign variable y
         ykey = subplot['ykey'] # y name
         ycol = subplot['ycol'] # y column
@@ -156,11 +155,12 @@ def make_subplot(subplot, ax):
             ax.plot(x,y, color = color,
             linestyle = linestyle, 
             marker = marker, 
-            label = label,
+            label = label
             )
         elif plottype == 'scatter':
             ax.scatter(x, y, color = color,
-            marker = marker, label = label)
+            marker = marker, label = label
+            )
 
     if 'xunit' in subplot:
         ax.set_xlabel(subplot['xunit'])
@@ -174,6 +174,7 @@ def make_subplot(subplot, ax):
             location = subplot['legend_location']
         ax.legend(loc = location)
     
+
     if 'remove_top_right_spines' in subplot and subplot['remove_top_right_spines']:
         ax.spines['right'].set_visible(False)
         ax.spines['top'].set_visible(False)
@@ -203,7 +204,6 @@ def main(config):
         N_subplots = len(figure['subplots'])
         # add subplots
         for subplot, ax, i in zip(figure['subplots'], np.array(axs).flatten()[:N_subplots],range(N_subplots)):
-            print(ax)
             title = ''
             if 'enumerate_subplots' in figure and figure['enumerate_subplots']:
                 title = f'{title}{string.ascii_lowercase[i]})'
@@ -212,8 +212,9 @@ def main(config):
                 title = f'{title} {titletext}'
             make_subplot(subplot, ax)
             ax.set_title(title, loc = 'left')
-        for ax in np.array(axs).flatten()[(N_subplots-rows*cols):]:
-            ax.axis('off')
+        if N_subplots != rows*cols:
+            for ax in np.array(axs).flatten()[(N_subplots-rows*cols):]:
+                ax.axis('off')
         # save figure
         path = figure['path']
         name = figure['filename']
