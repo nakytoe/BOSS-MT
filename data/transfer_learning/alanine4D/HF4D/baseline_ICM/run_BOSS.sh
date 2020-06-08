@@ -1,8 +1,8 @@
 #!/bin/bash
 #SBATCH --job-name=boss
 #SBATCH --account=project_2000382
-#SBATCH --partition=test
-#SBATCH --time=00:15:00
+#SBATCH --partition=small
+#SBATCH --time=04:00:00
 #SBATCH --ntasks=20
 #SBATCH -o job.out
 #SBATCH -e job.err
