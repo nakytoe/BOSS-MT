@@ -100,7 +100,7 @@ def plot_preprocessing(subplot):
             experiment = load_json(path, f'{namebase}{i}')
             if array_experiments['use_colormap']:
                 initpts = experiment['initpts']
-                color = ARRAY_COLORMAP(initpts[0]/N_experiments*initpts[0])
+                color = ARRAY_COLORMAP(i/N_experiments)
             else:
                 color = ARRAY_COLOR
             add_plot_attributes(experiment, color, ARRAY_LINESTYLE, ARRAY_MARKER)
