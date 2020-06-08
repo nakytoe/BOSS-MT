@@ -86,7 +86,7 @@ def compute_cputime(experiment, exptype):
         
 
 def main(config):
-    types = ['single_output', 'transfer_learning']
+    types = ['unique', 'array']
     for exptype in types:
         if exptype in config:
             for experiment in config[exptype]:

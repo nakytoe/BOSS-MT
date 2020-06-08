@@ -45,15 +45,13 @@ figures:
      title: none or subplot title
      legend: True or False
      labelrule: none or 'secondary initpts' or 'name' or invent more
-     
-
 """
+
 def load_json(path, filename):
     """
     load json file
     """
     filepath = os.path.expanduser(f'{path}{filename}.json')
-    print(filepath)
     with open(filepath, 'r') as f:
         data = json.load(f)
         return data
@@ -82,12 +80,12 @@ def add_plot_attributes(experiment, color, linestyle, marker):
     experiment['linestyle'] = linestyle
     experiment['marker'] = marker
 
-
-def make_subplot(subplot, ax):
+def plot_preprocessing(subplot):
+    """
+    return list of experiments with plotting attributes added
+    """
     path = subplot['path']
-    baseline = None
     experiments = []
-    # plot baseline
     if 'baseline' in subplot and subplot['baseline'] is not None:
         baseline_file = subplot['baseline']
         baseline = load_json(path, baseline_file)
@@ -100,7 +98,6 @@ def make_subplot(subplot, ax):
         for i in range(1, N_experiments+1):
             namebase = array_experiments['namebase']
             experiment = load_json(path, f'{namebase}{i}')
-            print(namebase)
             if array_experiments['use_colormap']:
                 initpts = experiment['initpts']
                 color = ARRAY_COLORMAP(initpts[0]/N_experiments*initpts[0])
@@ -110,7 +107,6 @@ def make_subplot(subplot, ax):
             experiments.append(experiment)
     # plot a unique experimennt
     if 'unique_experiments' in subplot and subplot['unique_experiments'] is not None:
-        print("BREAKS")
         for unique_name in subplot['unique_experiments']:
             unique = load_json(path, unique_name)
             add_plot_attributes(unique, UNIQUE_COLOR, UNIQUE_LINESTYLE, UNIQUE_MARKER)
@@ -121,11 +117,20 @@ def make_subplot(subplot, ax):
             make_label(experiment, subplot['labelrule'])
         else: experiment['label'] = None
 
-    plottype = 'timeseries':
-    if 'plottype' in subplot['plottype']:
+    return experiments
+
+
+def make_subplot(subplot, ax):
+    experiments = plot_preprocessing(subplot)
+    
+    # plot baseline
+
+    plottype = 'timeseries'
+    if 'plottype' in subplot:
         plottype = subplot['plottype']
 
     for experiment in experiments:
+        print(experiment['name'])
         # assign variable y
         ykey = subplot['ykey'] # y name
         ycol = subplot['ycol'] # y column
@@ -148,14 +153,15 @@ def make_subplot(subplot, ax):
         
         # make plot according to selected plot type
         if plottype == 'timeseries':
-            ax.plot(x,y, color = experiment['color'],
-            linestyle = experiment['linestyle'], 
-            marker = experiment['marker'], 
-            label = experiment['label'],
+            ax.plot(x,y, color = color,
+            linestyle = linestyle, 
+            marker = marker, 
+            label = label,
             )
         elif plottype == 'scatter':
             ax.scatter(x, y, color = color,
             marker = marker, label = label)
+
     if 'xunit' in subplot:
         ax.set_xlabel(subplot['xunit'])
     
@@ -197,7 +203,7 @@ def main(config):
         N_subplots = len(figure['subplots'])
         # add subplots
         for subplot, ax, i in zip(figure['subplots'], np.array(axs).flatten()[:N_subplots],range(N_subplots)):
-            
+            print(ax)
             title = ''
             if 'enumerate_subplots' in figure and figure['enumerate_subplots']:
                 title = f'{title}{string.ascii_lowercase[i]})'
