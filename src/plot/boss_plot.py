@@ -141,7 +141,7 @@ def make_subplot(subplot, ax):
             ycol = subplot['ycol'] # y column
             y = np.array(experiment[ykey])[:,ycol]
         else:
-            y = np.array(experiment)[ykey]
+            y = np.array(experiment[ykey])
         if 'ybegin' in subplot:
             ybegin = subplot['ybegin']
             y = y[ybegin:]
@@ -155,7 +155,9 @@ def make_subplot(subplot, ax):
         # assign variable x
         if 'xkey' in subplot:
             xkey = subplot['xkey']
-            xcol = subplot['xcol']
+            xcol = 0
+            if 'xcol' in subplot:
+                xcol = subplot['xcol']
             x = experiment[xkey]
             if 'xbegin' in subplot:
                 xbegin = subplot['xbegin']

@@ -35,7 +35,6 @@ def compute_cputime(experiment, exptype):
                 data = json.load(f)
                 
             if data is not None: # write to file
-                print(data)
                 N = len(data['acqtime'])
                 data['modeltime'] = [itertime-acqtime for itertime, acqtime in zip(data['itertime'], data['acqtime'])]
                 data['cputime'] = [sum(data['modeltime'][:i])+(i+1)*single_core_time for i in range(N)]
