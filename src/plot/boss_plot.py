@@ -106,7 +106,7 @@ def plot_preprocessing(subplot):
         baseline = load_json(path, baseline_file)
         add_plot_attributes(baseline, BASELINE_COLOR, BASELINE_LINESTYLE, BASELINE_MARKER)
         experiments.append(baseline)
-        
+
     if 'unique_experiments' in subplot and subplot['unique_experiments'] is not None:
         for unique_name in subplot['unique_experiments']:
             unique = load_json(path, unique_name)
@@ -148,6 +148,9 @@ def make_subplot(subplot, ax):
         if 'yend' in subplot:
             yend = subplot['yend']
             y = y[:yend]
+        ## rescale y if needed
+        if 'rescale_y' in subplot:
+            y = y*subplot['rescale_y']
         N_y = len(y)
         # assign variable x
         if 'xkey' in subplot:
