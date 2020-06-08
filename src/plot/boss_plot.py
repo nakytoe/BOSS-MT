@@ -121,6 +121,10 @@ def make_subplot(subplot, ax):
             make_label(experiment, subplot['labelrule'])
         else: experiment['label'] = None
 
+    plottype = 'timeseries':
+    if 'plottype' in subplot['plottype']:
+        plottype = subplot['plottype']
+
     for experiment in experiments:
         # assign variable y
         ykey = subplot['ykey'] # y name
@@ -136,13 +140,22 @@ def make_subplot(subplot, ax):
         else:
             x = np.arange(N_y)+1
         
+        # setup
+        color = experiment['color']
+        marker = experiment['marker']
+        linestyle = experiment['linestyle']
+        label = experiment['label']
         
-        # make plot
-        ax.plot(x,y, color = experiment['color'],
-         linestyle = experiment['linestyle'], 
-         marker = experiment['marker'], 
-         label = experiment['label'],
-         )
+        # make plot according to selected plot type
+        if plottype == 'timeseries':
+            ax.plot(x,y, color = experiment['color'],
+            linestyle = experiment['linestyle'], 
+            marker = experiment['marker'], 
+            label = experiment['label'],
+            )
+        elif plottype == 'scatter':
+            ax.scatter(x, y, color = color,
+            marker = marker, label = label)
     if 'xunit' in subplot:
         ax.set_xlabel(subplot['xunit'])
     
