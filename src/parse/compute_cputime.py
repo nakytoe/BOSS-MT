@@ -31,30 +31,31 @@ def compute_cputime(experiment, exptype):
     if exptype == 'single_output':
         for name, single_core_time in zip(experiment['names'], experiment['single_core_time']):
             data = None
-            with open(f'{path}{name}.json', 'r') as file:
-                data = json.load(file)
+            with open(f'{path}{name}.json', 'r') as f:
+                data = json.load(f)
                 
             if data is not None: # write to file
+                print(data)
                 N = len(data['acqtime'])
                 data['modeltime'] = [itertime-acqtime for itertime, acqtime in zip(data['itertime'], data['acqtime'])]
                 data['cputime'] = [sum(data['modeltime'][:i])+(i+1)*single_core_time for i in range(N)]
-                with open(f'{path}{name}.json', 'w') as file:
+                with open(f'{path}{name}.json', 'w') as f:
                     print(f'Writing to file: {path}{name}.json')
-                    json.dump(data, file)
+                    json.dump(data, f)
             
     elif exptype == 'transfer_learning':
         name = experiment['namebase']
         for i in range(1,experiment['N_experiments']+1):
             data = None
-            with open(f'{path}{name}{i}.json', 'r') as file:
-                data = json.load(file)
+            with open(f'{path}{name}{i}.json', 'r') as f:
+                data = json.load(f)
             if data is not None:
                 initpts_cputimes = []
                 initpts_list = data['initpts']
                 # load cpu times for initpts
                 for baseline, initpts in zip(experiment['baselines'], initpts_list):
-                    with open(f'{path}{baseline}.json','r') as file:
-                        data = json.load(file)
+                    with open(f'{path}{baseline}.json','r') as f:
+                        data = json.load(f)
                         if 'cputime' in data:
                             initpts_cputimes.append(data['cputime'][:initpts])
                         else:
@@ -75,9 +76,9 @@ def compute_cputime(experiment, exptype):
                 for j in range(N):
                     data['cputime'].append(sum(data['modeltime'][:j])+(j+1)*single_core_time + init_cputime_sum)
                 
-                with open(f'{path}{name}{i}.json', 'w') as file:
+                with open(f'{path}{name}{i}.json', 'w') as f:
                     print(f'Writing to file: {path}{name}{i}.json')
-                    json.dump(data, file)
+                    json.dump(data, f)
         
         
         
@@ -86,7 +87,7 @@ def compute_cputime(experiment, exptype):
         
 
 def main(config):
-    types = ['unique', 'array']
+    types = ['single_output', 'transfer_learning']
     for exptype in types:
         if exptype in config:
             for experiment in config[exptype]:
@@ -98,6 +99,6 @@ if __name__=='__main__':
     # run with python3 compute_cputime.py config.yaml
     args = sys.argv
     configfile = args[1]
-    with open(configfile, 'r') as file:
-        config = yaml.load(file, Loader=yaml.FullLoader)
+    with open(configfile, 'r') as f:
+        config = yaml.load(f, Loader=yaml.FullLoader)
         main(config)
