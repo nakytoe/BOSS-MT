@@ -122,24 +122,43 @@ def plot_preprocessing(subplot):
 
 def make_subplot(subplot, ax):
     experiments = plot_preprocessing(subplot)
-    
+    N_experiments = len(experiments)
+    make_subplots = range(N_experiments)
+    if 'make_subplots' in subplot: # user can define explicitely which subplots to show
+        make_subplots = subplot['make_subplots']
     # plot baseline
 
     plottype = 'timeseries'
     if 'plottype' in subplot:
         plottype = subplot['plottype']
 
-    for experiment in experiments:
+    for i in make_subplots:
+        experiment = experiments[i]
         # assign variable y
         ykey = subplot['ykey'] # y name
-        ycol = subplot['ycol'] # y column
-        y = np.array(experiment[ykey])[:,ycol]
+        if 'ycol' in subplot:
+            ycol = subplot['ycol'] # y column
+            y = np.array(experiment[ykey])[:,ycol]
+        else:
+            y = np.array(experiment)[ykey]
+        if 'ybegin' in subplot:
+            ybegin = subplot['ybegin']
+            y = y[ybegin:]
+        if 'yend' in subplot:
+            yend = subplot['yend']
+            y = y[:yend]
         N_y = len(y)
         # assign variable x
         if 'xkey' in subplot:
             xkey = subplot['xkey']
             xcol = subplot['xcol']
             x = experiment[xkey]
+            if 'xbegin' in subplot:
+                xbegin = subplot['xbegin']
+                x = x[xbegin:]
+            if 'xend' in subplot:
+                xend = subplot['xend']
+                x = x[:xend]
             x = np.atleast_2d(x).reshape((len(x), -1))[-N_y:,xcol]
         else:
             x = np.arange(N_y)+1
