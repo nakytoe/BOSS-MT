@@ -86,11 +86,6 @@ def plot_preprocessing(subplot):
     """
     path = subplot['path']
     experiments = []
-    if 'baseline' in subplot and subplot['baseline'] is not None:
-        baseline_file = subplot['baseline']
-        baseline = load_json(path, baseline_file)
-        add_plot_attributes(baseline, BASELINE_COLOR, BASELINE_LINESTYLE, BASELINE_MARKER)
-        experiments.append(baseline)
     # plot an experiment
     if 'array_experiments' in subplot and subplot['array_experiments'] is not None:
         array_experiments = subplot['array_experiments']
@@ -106,6 +101,12 @@ def plot_preprocessing(subplot):
             add_plot_attributes(experiment, color, ARRAY_LINESTYLE, ARRAY_MARKER)
             experiments.append(experiment)
     # plot a unique experimennt
+    if 'baseline' in subplot and subplot['baseline'] is not None:
+        baseline_file = subplot['baseline']
+        baseline = load_json(path, baseline_file)
+        add_plot_attributes(baseline, BASELINE_COLOR, BASELINE_LINESTYLE, BASELINE_MARKER)
+        experiments.append(baseline)
+        
     if 'unique_experiments' in subplot and subplot['unique_experiments'] is not None:
         for unique_name in subplot['unique_experiments']:
             unique = load_json(path, unique_name)
