@@ -200,10 +200,25 @@ def make_subplot(subplot, ax):
             legend_title = subplot['legend_title']
         ax.legend(title = legend_title,loc = location)
 
+    
+    xmin = None
+    xmax = None
+    if 'xmin' in subplot:
+        xmin =  subplot['xmin']
+    if 'xmax' in subplot:
+        xmax = subplot['xmax']
+    ax.set_xlim(xmin, xmax)
+    ymin = None
+    ymax = None
+    if 'ymin' in subplot:
+        ymin =  subplot['ymin']
+    if 'ymax' in subplot:
+        ymax = subplot['ymax']
+    ax.set_ylim(ymin, ymax)
+
     if 'remove_top_right_spines' in subplot and subplot['remove_top_right_spines']:
         ax.spines['right'].set_visible(False)
         ax.spines['top'].set_visible(False)
-        
     
     
 
