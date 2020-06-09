@@ -251,7 +251,15 @@ def main(config):
     """
     for figure in config['figures']: # make figure
         rows, cols = calculate_plotgrid(figure)
-        fig, axs = plt.subplots(rows, cols, figsize = (cols*5, rows*5))
+        sharey = 'none' # whether to share y axis (none, row, col, all)
+        if 'sharey' in figure:
+            sharey = figure['sharey']
+        sharex = 'none' # share x axis (none, row, col, all)
+        if 'sharex' in figure:
+            sharex = figure['sharex']
+        fig, axs = plt.subplots(rows, cols,
+                 figsize = (cols*5, rows*5),
+                 sharex = sharex, sharey = sharey)
         N_subplots = len(figure['subplots'])
         # add subplots
         for subplot, ax, i in zip(figure['subplots'], np.array(axs).flatten()[:N_subplots],range(N_subplots)):
