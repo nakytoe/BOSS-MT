@@ -69,8 +69,10 @@ def make_label(experiment, labelrule):
             experiment['label'] = f'{secondary_initpts}'
         else:
             experiment['label'] = f'0 ({name})'
-    if labelrule == 'name':
+    elif labelrule == 'name':
         experiment['label'] = experiment['name']
+    elif labelrule == 'experiment type':
+        experiment['label'] = experiment['experiment_type']
 
 def add_plot_attributes(experiment, color, linestyle, marker):
     """
@@ -99,22 +101,29 @@ def plot_preprocessing(subplot):
             else:
                 color = ARRAY_COLOR
             add_plot_attributes(experiment, color, ARRAY_LINESTYLE, ARRAY_MARKER)
+            experiment['experiment_type'] = experiment['name'][0:-2]
             experiments.append(experiment)
     # plot a unique experimennt
     if 'baseline' in subplot and subplot['baseline'] is not None:
         baseline_file = subplot['baseline']
         baseline = load_json(path, baseline_file)
         add_plot_attributes(baseline, BASELINE_COLOR, BASELINE_LINESTYLE, BASELINE_MARKER)
+        baseline['experiment_type'] = baseline['name']
         experiments.append(baseline)
 
     if 'unique_experiments' in subplot and subplot['unique_experiments'] is not None:
         for unique_name in subplot['unique_experiments']:
             unique = load_json(path, unique_name)
             add_plot_attributes(unique, UNIQUE_COLOR, UNIQUE_LINESTYLE, UNIQUE_MARKER)
+            unique['experiment_type'] = unique['name']
             experiments.append(unique)
     # add labels
-    for experiment in experiments:
-        if 'legend' in subplot and 'labelrule' in subplot:
+    label_experiments = range(len(experiments))
+    if 'label_experiments' in subplot:
+        label_experiments = subplot['label_experiments']
+    
+    for experiment, idx in zip(experiments, range(len(experiments))):
+        if idx in label_experiments and 'legend' in subplot and 'labelrule' in subplot:
             make_label(experiment, subplot['labelrule'])
         else: experiment['label'] = None
 
