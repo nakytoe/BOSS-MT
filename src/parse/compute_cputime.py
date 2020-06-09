@@ -54,9 +54,9 @@ def compute_cputime(experiment, exptype):
                 # load cpu times for initpts
                 for baseline, initpts in zip(experiment['baselines'], initpts_list):
                     with open(f'{path}{baseline}.json','r') as f:
-                        data = json.load(f)
-                        if 'cputime' in data:
-                            initpts_cputimes.append(data['cputime'][:initpts])
+                        baseline_data = json.load(f)
+                        if 'cputime' in baseline_data:
+                            initpts_cputimes.append(baseline_data['cputime'][:initpts])
                         else:
                             raise ValueError(f'cputime not computed for baseline: {path}{baseline}')
 

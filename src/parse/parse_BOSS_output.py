@@ -98,5 +98,8 @@ def read_bossout(path, filename, expname):
     ret['GP_hyperparam'] = gp_hyper
     ret['itertime'] = itertime
     ret['totaltime'] = totaltime
+
+    if len(ret['initpts']) == 1: # add 0 secondary initpts
+        ret['initpts'].append(0)
     
     return ret
