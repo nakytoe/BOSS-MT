@@ -23,7 +23,7 @@ v2_copy1=`awk 'NR==1' $infile`
 v2_copy=`echo ${v2_copy1} | sed -e 's/[eE]+*/\\*10\\^/'`
 v2=`echo "scale=10; $v2_copy/1" | bc -l`
 
-v3_copy1=`awk 'NR==1' $infile`
+v3_copy1=`awk 'NR==2' $infile`
 v3_copy=`echo ${v3_copy1} | sed -e 's/[eE]+*/\\*10\\^/'`
 v3=`echo "scale=10; $v3_copy/1" | bc -l`
 
