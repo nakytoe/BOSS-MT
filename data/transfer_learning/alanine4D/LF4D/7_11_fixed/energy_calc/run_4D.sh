@@ -24,7 +24,7 @@ v3_copy1=60.40
 v3_copy=`echo ${v3_copy1} | sed -e 's/[eE]+*/\\*10\\^/'`
 v3=`echo "scale=10; $v3_copy/1" | bc -l`
 
-v4_copy1==`awk 'R==2' $infile`
+v4_copy1=`awk 'NR==2' $infile`
 v4_copy=`echo ${v4_copy1} | sed -e 's/[eE]+*/\\*10\\^/'`
 v4=`echo "scale=10; $v4_copy/1" | bc -l`
 
