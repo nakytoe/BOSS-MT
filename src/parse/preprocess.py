@@ -2,11 +2,20 @@ import yaml
 import json
 import os, sys
 
-
-def compute_cputime(experiment, exptype):
+def rescale_and_center(data, keyword, rescale_by, truemin, idx):
     """
-    Function to read parsed boss.out json files, compute single core cpu time 
-    approximations to those and save the results in the same file.
+    Function to rescale and center values
+    """
+    for val in data[keyword]:
+        val[idx] = (val[idx]-truemin)*rescale_by
+
+def preprocess(experiment, exptype):
+    """
+    Function to read parsed boss.out json files and:
+    compute single core cpu time,
+    center and rescale output so that best acq of baseline is 0
+
+    finally save the results in the same file.
     
     ---
     # yaml format for cpu time computing
@@ -29,15 +38,29 @@ def compute_cputime(experiment, exptype):
     """
     path = os.path.expanduser(str(experiment['path']))
     if exptype == 'single_output':
-        for name, single_core_time in zip(experiment['names'], experiment['single_core_time']):
+        for name, single_core_time, rescale_by in zip(experiment['names'],
+         experiment['single_core_time'], experiment['rescale_by']):
             data = None
             with open(f'{path}{name}.json', 'r') as f:
                 data = json.load(f)
                 
             if data is not None: # write to file
+                ### compute cpu time
                 N = len(data['acqtime'])
                 data['modeltime'] = [itertime-acqtime for itertime, acqtime in zip(data['itertime'], data['acqtime'])]
                 data['cputime'] = [sum(data['modeltime'][:i])+(i+1)*single_core_time for i in range(N)]
+                
+                ### rescale and center
+                truemin = data['bestacq'][-1][-1]
+                # bestacq
+                rescale_and_center(data, 'bestacq', rescale_by, truemin, -1)
+                # gmp mean
+                rescale_and_center(data, 'gmp', rescale_by, truemin, -2)
+                # gmp variance
+                rescale_and_center(data, 'gmp', rescale_by, 0, -1)
+                # observations y
+                rescale_and_center(data, 'xy', rescale_by, truemin, -1)
+
                 with open(f'{path}{name}.json', 'w') as f:
                     print(f'Writing to file: {path}{name}.json')
                     json.dump(data, f)
@@ -75,6 +98,23 @@ def compute_cputime(experiment, exptype):
                 for j in range(N):
                     data['cputime'].append(sum(data['modeltime'][:j])+(j+1)*single_core_time + init_cputime_sum)
                 
+
+
+                ### rescale and center for primary baseline
+                rescale_by = experiment['rescale_by']
+                baseline = experiment['baselines'][0]
+                with open(f'{path}{baseline}.json','r') as f:
+                    baseline_data = json.load(f)
+                    truemin = baseline_data['bestacq'][-1][-1]/rescale_by
+                    # bestacq
+                    rescale_and_center(data, 'bestacq', rescale_by, truemin, -1)
+                    # gmp mean
+                    rescale_and_center(data, 'gmp', rescale_by, truemin, -2)
+                    # gmp variance
+                    rescale_and_center(data, 'gmp', rescale_by, 0, -1)
+                    # observations y
+                    rescale_and_center(data, 'xy', rescale_by, truemin, -1)
+
                 with open(f'{path}{name}{i}.json', 'w') as f:
                     print(f'Writing to file: {path}{name}{i}.json')
                     json.dump(data, f)
