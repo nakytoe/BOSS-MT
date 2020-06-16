@@ -11,6 +11,6 @@ cd ~/BOSS-MT/src
 ### preprocessing step 1: parse data from boss.out
 python3 parse/parse_files.py config/parse_boss_out.yaml
 ### preprocessing step 2: compute model and cpu times
-python3 parse/compute_cputime.py config/compute_cputime.yaml    
+python3 parse/preprocess.py config/preprocess.yaml    
 ### calculate iterations of convergence
 python3 analysis/convergence.py config/calculate_convergence.yaml
