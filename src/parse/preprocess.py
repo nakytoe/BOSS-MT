@@ -38,8 +38,8 @@ def preprocess(experiment, exptype):
     """
     path = os.path.expanduser(str(experiment['path']))
     if exptype == 'single_output':
-        for name, single_core_time, rescale_by in zip(experiment['names'],
-         experiment['single_core_time'], experiment['rescale_by']):
+        for name, single_core_time, rescale_by, get_truemin_from in zip(experiment['names'],
+         experiment['single_core_time'], experiment['rescale_by'], experiment['get_truemin_from']):
             data = None
             with open(f'{path}{name}.json', 'r') as f:
                 data = json.load(f)
@@ -51,7 +51,12 @@ def preprocess(experiment, exptype):
                 data['cputime'] = [sum(data['modeltime'][:i])+(i+1)*single_core_time for i in range(N)]
                 
                 ### rescale and center
-                truemin = data['bestacq'][-1][-1]
+                if get_truemin_from is None:
+                    truemin = data['bestacq'][-1][-1]
+                else:
+                    with open(f'{path}{get_truemin_from}.json', 'r') as f:
+                        truemindata = json.load(f)
+                    truemin = truemindata['bestacq'][-1][-1]
                 # bestacq
                 rescale_and_center(data, 'bestacq', rescale_by, truemin, -1)
                 # gmp mean
