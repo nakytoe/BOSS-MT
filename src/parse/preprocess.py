@@ -51,7 +51,7 @@ def preprocess(experiment, exptype):
                 data['cputime'] = [sum(data['modeltime'][:i])+(i+1)*single_core_time for i in range(N)]
                 
                 ### rescale and center
-                if get_truemin_from is None:
+                if get_truemin_from == 'self' or get_truemin_from is None:
                     truemin = data['bestacq'][-1][-1]
                 else:
                     with open(f'{path}{get_truemin_from}.json', 'r') as f:
@@ -135,7 +135,7 @@ def main(config):
     for exptype in types:
         if exptype in config:
             for experiment in config[exptype]:
-                compute_cputime(experiment, exptype)
+                preprocess(experiment, exptype)
                     
 
 
