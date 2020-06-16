@@ -53,16 +53,18 @@ def preprocess(experiment, exptype):
                 ### rescale and center
                 if get_truemin_from == 'self' or get_truemin_from is None:
                     truemin = data['bestacq'][-1][-1]
+                    data['baseline_best_acquisition'] = truemin
                 else:
                     with open(f'{path}{get_truemin_from}.json', 'r') as f:
                         truemindata = json.load(f)
-                    truemin = truemindata['bestacq'][-1][-1]
+                    truemin = truemindata['baseline_best_acquisition']
+                
                 # bestacq
                 rescale_and_center(data, 'bestacq', rescale_by, truemin, -1)
                 # gmp mean
                 rescale_and_center(data, 'gmp', rescale_by, truemin, -2)
                 # gmp variance
-                rescale_and_center(data, 'gmp', rescale_by, 0, -1)
+                rescale_and_center(data, 'gmp', rescale_by**2, 0, -1)
                 # observations y
                 rescale_and_center(data, 'xy', rescale_by, truemin, -1)
 
@@ -110,13 +112,15 @@ def preprocess(experiment, exptype):
                 baseline = experiment['baselines'][0]
                 with open(f'{path}{baseline}.json','r') as f:
                     baseline_data = json.load(f)
-                    truemin = baseline_data['bestacq'][-1][-1]/rescale_by
+                    
+                    truemin = baseline_data['baseline_best_acquisition']
+
                     # bestacq
                     rescale_and_center(data, 'bestacq', rescale_by, truemin, -1)
                     # gmp mean
                     rescale_and_center(data, 'gmp', rescale_by, truemin, -2)
                     # gmp variance
-                    rescale_and_center(data, 'gmp', rescale_by, 0, -1)
+                    rescale_and_center(data, 'gmp', rescale_by**2, 0, -1)
                     # observations y
                     rescale_and_center(data, 'xy', rescale_by, truemin, -1)
 
