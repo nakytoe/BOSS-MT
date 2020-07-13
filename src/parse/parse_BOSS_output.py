@@ -1,6 +1,7 @@
 import numpy
 import json
 import os
+import sys
 
 def parsevalues(line, cast = int, sep = None, idx = 1):
     return [cast(val.strip(sep)) for val in line.split(sep)[idx:]]
@@ -53,9 +54,9 @@ def read_bossout(path, filename, expname):
     totaltime = []
     with open(''.join((path,filename)), 'r') as f:
         lines = f.readlines()
+        ret['boss.in'] = lines[0:100]
         for i in range(len(lines)):
             line = lines[i]
-            ret['boss.in'] = lines[20:50]
             if '| Data point added to dataset' in line:
                 line = lines[i+1]
                 xy.append(parsevalues(line,cast = float,idx = 0))
@@ -103,3 +104,13 @@ def read_bossout(path, filename, expname):
         ret['initpts'].append(0)
     
     return ret
+
+if __name__=='__main__':
+    ### give boss.out and output.json as parameters
+    args = sys.argv[1:]
+    infile = args[0]
+    expname = args[1]
+    outfile = args[2].split('.json')[0]
+    print("input: ", infile)
+    print("output: ", outfile)
+    save_to_json('', infile, expname, '', outfile)
