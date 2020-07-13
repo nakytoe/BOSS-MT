@@ -1,12 +1,12 @@
 
 
-# Preprocess data
+EXP_wildcard = glob_wildcards('data/experiments/{exp_name}/boss.out')
+EXP_NAME = EXP_wildcard.exp_name
+print(EXP_NAME)
 
-EXP_RAW_FOLDER = glob_wildcards('data/{exp_name}/')
-EXP_RAW_BOSSOUT = glob_wildcards(join(EXPERIMENT_FOLDER, 'exp_{exp_num}/boss.out'))
-
-rule all:
+rule somerule:
     input:
-        filename = EXP_RAW_BOSSOUT
-    shell:
-        'echo {input.filename}'
+        expand('data/experiments/{exp_name}/boss.out',
+                exp_name = EXP_NAME)
+    output:
+        'processed_data/'.join(,input.split('/')[0],'_', input.split['_'][-1])
