@@ -2,151 +2,68 @@ import yaml
 import json
 import os, sys
 
-def rescale_and_center(data, keyword, rescale_by, truemin, idx):
+def get_bestacq(data):
     """
-    Function to rescale and center values
+    return point x and output f(x) for lowest observed best acquisition
+    """
+    return data['bestacq'][-1,:]
+
+def offset(data, keyword, truemin, idx):
+    """
+    Function to offset values
     """
     for val in data[keyword]:
-        val[idx] = (val[idx]-truemin)*rescale_by
+        val[idx] = (val[idx]-truemin)
 
-def preprocess(experiment, exptype):
+def calculate_convergence(data, varname, idx):
     """
-    Function to read parsed boss.out json files and:
-    compute single core cpu time,
-    center and rescale output so that best acq of baseline is 0
+    calculates index of variable (from the rear),
+    after which the variable is less or equalthan the tolerance
+    if the very last value of the variable is larger than tolerance, None is given
+    if no value is larger, N is returned
 
-    finally save the results in the same file.
+    then, calculates BO iteration and total runtime for convergence at given level 
+    """
+    # select right column and reverse the order
+    values = np.atleast_2d(data[varname])[:,idx][::-1]
+    data[f'iterations_to_{varname}_convergence'] = [] # BO iterations
+    data[f'totaltime_to_{varname}_convergence'] = [] # total runtime
+    data[f'observations_to_{varname}_convergence'] = [] # total number of observations, including initpts
     
-    ---
-    # yaml format for cpu time computing
+    for tolerance in data['tolerance_levels']:
+        i = 0
+        for value in values:
+            if value > tolerance_level:
+                break
+            i += 1
+        if i == 0:
+            iterations_to_convergence = None
+            totaltime_to_convergence = None
+            observations_to_convergence = None
+        else:
+            iterations_to_convergence = len(values)-i
+            totaltime_to_convergence = data['totaltime'][-i]
+            observations_to_convergence = len(data['xy'])-i
+        data[f'iterations_to_{varname}_convergence'].append(iterations_to_convergence)
+        data[f'iterations_to_{varname}_convergence'].append(totaltime_to_convergence)
+        data[f'observations_to_{varname}_convergence'].append(observations_to_convergence)
 
-    single_output: # baselines and single experiments
-     -
-      path: # path to json files
-      names: str list # path to experiment names
-      single_core_times: float list # approximation acquisition time on single core
-
-    transfer_learning:
-     -
-      path:
-      baselines:
-       - name of baseline 1
-       - 
-      N_experiments:
-      namebase:
-      single_core_time:
+def preprocess(data, truemin = 0, tolerance_levels = [0]):
     """
-    path = os.path.expanduser(str(experiment['path']))
-    if exptype == 'single_output':
-        for name, single_core_time, rescale_by, get_truemin_from in zip(experiment['names'],
-         experiment['single_core_time'], experiment['rescale_by'], experiment['get_truemin_from']):
-            data = None
-            with open(f'{path}{name}.json', 'r') as f:
-                data = json.load(f)
-                
-            if data is not None: # write to file
-                ### compute cpu time
-                N = len(data['acqtime'])
-                data['modeltime'] = [itertime-acqtime for itertime, acqtime in zip(data['itertime'], data['acqtime'])]
-                data['cputime'] = [sum(data['modeltime'][:i])+(i+1)*single_core_time for i in range(N)]
-                
-                ### rescale and center
-                if get_truemin_from == 'self' or get_truemin_from is None:
-                    truemin = data['bestacq'][-1][-1]
-                    data['baseline_best_acquisition'] = truemin
-                else:
-                    with open(f'{path}{get_truemin_from}.json', 'r') as f:
-                        truemindata = json.load(f)
-                    truemin = truemindata['baseline_best_acquisition']
-                
-                # bestacq
-                rescale_and_center(data, 'bestacq', rescale_by, truemin, -1)
-                # gmp mean
-                rescale_and_center(data, 'gmp', rescale_by, truemin, -2)
-                # gmp variance
-                rescale_and_center(data, 'gmp', rescale_by**2, 0, -1)
-                # observations y
-                rescale_and_center(data, 'xy', rescale_by, truemin, -1)
+    calculate model time
+    center and rescale output so that best acq of baseline is 0
+    calculate convergence 
+    """
+    N = len(data['acqtime'])
+    data['modeltime'] = [itertime-acqtime for itertime, acqtime in zip(data['itertime'], data['acqtime'])]
+    
+    ### offset
+    for keyword, idx in zip(['bestacq', 'gmp', 'xy'], [-1,-2,-1])
+        offset(data, keyword, truemin idx)
 
-                with open(f'{path}{name}.json', 'w') as f:
-                    print(f'Writing to file: {path}{name}.json')
-                    json.dump(data, f)
-            
-    elif exptype == 'transfer_learning':
-        name = experiment['namebase']
-        for i in range(1,experiment['N_experiments']+1):
-            data = None
-            with open(f'{path}{name}{i}.json', 'r') as f:
-                data = json.load(f)
-            if data is not None:
-                initpts_cputimes = []
-                initpts_list = data['initpts']
-                # load cpu times for initpts
-                for baseline, initpts in zip(experiment['baselines'], initpts_list):
-                    with open(f'{path}{baseline}.json','r') as f:
-                        baseline_data = json.load(f)
-                        if 'cputime' in baseline_data:
-                            initpts_cputimes.append(baseline_data['cputime'][:initpts])
-                        else:
-                            raise ValueError(f'cputime not computed for baseline: {path}{baseline}')
-
-                for j in range(len(initpts_cputimes[1])): # add cumulative cpu time to initpts
-                    initpts_cputimes[1][j] += initpts_cputimes[0][-1]
-                
-                data['cputime'] = []
-                for cputimes in initpts_cputimes:
-                    for cputime in cputimes:
-                        data['cputime'].append(cputime)
-                init_cputime_sum = data['cputime'][-1]
-                # Compute cpu times for experiments           
-                single_core_time = experiment['single_core_time']
-                N = len(data['acqtime'])
-                data['modeltime'] = [itertime-acqtime for itertime, acqtime in zip(data['itertime'][-N:], data['acqtime'])]
-                for j in range(N):
-                    data['cputime'].append(sum(data['modeltime'][:j])+(j+1)*single_core_time + init_cputime_sum)
-                
-
-
-                ### rescale and center for primary baseline
-                rescale_by = experiment['rescale_by']
-                baseline = experiment['baselines'][0]
-                with open(f'{path}{baseline}.json','r') as f:
-                    baseline_data = json.load(f)
-                    
-                    truemin = baseline_data['baseline_best_acquisition']
-
-                    # bestacq
-                    rescale_and_center(data, 'bestacq', rescale_by, truemin, -1)
-                    # gmp mean
-                    rescale_and_center(data, 'gmp', rescale_by, truemin, -2)
-                    # gmp variance
-                    rescale_and_center(data, 'gmp', rescale_by**2, 0, -1)
-                    # observations y
-                    rescale_and_center(data, 'xy', rescale_by, truemin, -1)
-
-                with open(f'{path}{name}{i}.json', 'w') as f:
-                    print(f'Writing to file: {path}{name}{i}.json')
-                    json.dump(data, f)
-        
-        
-        
-    else:
-        raise NotImplementedError(f'unknown experiment type: {exptype} \n compute_cputime not implemented')
-        
-
-def main(config):
-    types = ['single_output', 'transfer_learning']
-    for exptype in types:
-        if exptype in config:
-            for experiment in config[exptype]:
-                preprocess(experiment, exptype)
-                    
-
-
-if __name__=='__main__':
-    # run with python3 compute_cputime.py config.yaml
-    args = sys.argv
-    configfile = args[1]
-    with open(configfile, 'r') as f:
-        config = yaml.load(f, Loader=yaml.FullLoader)
-        main(config)
+    ### gmp convergence
+    data['tolerance_levels'] = tolerance_levels
+    calculate_convergence(data, varname = 'gmp', idx = -2)
+    
+    return data
+   
