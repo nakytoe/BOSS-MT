@@ -1,6 +1,7 @@
 import yaml
 import json
 import os, sys
+import numpy as np
 
 def get_bestacq(data):
     """
@@ -8,12 +9,27 @@ def get_bestacq(data):
     """
     return data['bestacq'][-1,:]
 
-def offset(data, keyword, truemin, idx):
+
+def y_offset(data):
     """
-    Function to offset values
+    Function to offset y values
     """
-    for val in data[keyword]:
-        val[idx] = (val[idx]-truemin)
+    y_offset = data['truemin']
+
+    for val in data['gmp']:
+        val[-2] = (val[-2]-y_offset[0])
+
+    for val in data['bestacq']:
+        val[-1] = (val[-1]-y_offset[0])
+
+    for i in range(len(y_offset)):
+        for val in data['xy']:
+            if i == 0: # primary data 
+                val[-1] = (val[-1]-y_offset[i])
+            elif len(y_offset) > 0 and val[-2] == i: # there are multiple sources and data is secondary
+                val[-1] = (val[-1]-y_offset[i])
+
+
 
 def calculate_convergence(data, varname, idx):
     """
@@ -33,7 +49,7 @@ def calculate_convergence(data, varname, idx):
     for tolerance in data['tolerance_levels']:
         i = 0
         for value in values:
-            if value > tolerance_level:
+            if value > tolerance:
                 break
             i += 1
         if i == 0:
@@ -48,7 +64,7 @@ def calculate_convergence(data, varname, idx):
         data[f'iterations_to_{varname}_convergence'].append(totaltime_to_convergence)
         data[f'observations_to_{varname}_convergence'].append(observations_to_convergence)
 
-def preprocess(data, truemin = 0, tolerance_levels = [0]):
+def preprocess(data, tolerance_levels = [0]):
     """
     calculate model time
     center and rescale output so that best acq of baseline is 0
@@ -57,9 +73,8 @@ def preprocess(data, truemin = 0, tolerance_levels = [0]):
     N = len(data['acqtime'])
     data['modeltime'] = [itertime-acqtime for itertime, acqtime in zip(data['itertime'], data['acqtime'])]
     
-    ### offset
-    for keyword, idx in zip(['bestacq', 'gmp', 'xy'], [-1,-2,-1])
-        offset(data, keyword, truemin idx)
+    ### offset y
+    y_offset(data)
 
     ### gmp convergence
     data['tolerance_levels'] = tolerance_levels

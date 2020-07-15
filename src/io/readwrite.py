@@ -1,4 +1,5 @@
 import json
+import yaml
 
 def load_json(path, filename):
     """
@@ -15,3 +16,11 @@ def save_json(data, path, filename):
     """
     with open(f'{path}{filename}', 'w') as f:
         json.dump(data, f)
+
+def load_yaml(path, filename):
+    """
+    load yaml file
+    """
+    with open(f'{path}{filename}', 'r') as f:
+        return yaml.load(f, Loader=yaml.FullLoader)
+        
