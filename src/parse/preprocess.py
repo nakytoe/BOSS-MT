@@ -7,7 +7,7 @@ def get_bestacq(data):
     """
     return point x and output f(x) for lowest observed best acquisition
     """
-    return data['bestacq'][-1,:]
+    return np.array(data['bestacq'])[-1,:]
 
 
 def y_offset(data):
@@ -61,7 +61,7 @@ def calculate_convergence(data, varname, idx):
             totaltime_to_convergence = data['totaltime'][-i]
             observations_to_convergence = len(data['xy'])-i
         data[f'iterations_to_{varname}_convergence'].append(iterations_to_convergence)
-        data[f'iterations_to_{varname}_convergence'].append(totaltime_to_convergence)
+        data[f'totaltime_to_{varname}_convergence'].append(totaltime_to_convergence)
         data[f'observations_to_{varname}_convergence'].append(observations_to_convergence)
 
 def preprocess(data, tolerance_levels = [0]):
