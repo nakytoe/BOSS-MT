@@ -64,13 +64,26 @@ def calculate_convergence(data, varname, idx):
         data[f'totaltime_to_{varname}_convergence'].append(totaltime_to_convergence)
         data[f'observations_to_{varname}_convergence'].append(observations_to_convergence)
 
+def calculate_B(data):
+    dim = data['dim']
+    if dim == len(data['xy'][0])-1:
+        data['B'] = None
+    else:
+        data['B'] = []
+        tasks = data['tasks']
+        for row in data['GP_hyperparam']:
+            W = np.array(row[dim:dim*tasks]).reshape((-1,tasks))
+            Kappa = np.diag(row[dim*tasks:])
+            B = W.dot(W.T) + Kappa
+            data['B'].append([b for b in B.flatten()])
+
+
 def preprocess(data, tolerance_levels = [0]):
     """
     calculate model time
     center and rescale output so that best acq of baseline is 0
     calculate convergence 
     """
-    N = len(data['acqtime'])
     data['modeltime'] = [itertime-acqtime for itertime, acqtime in zip(data['itertime'], data['acqtime'])]
     
     ### offset y
@@ -79,6 +92,9 @@ def preprocess(data, tolerance_levels = [0]):
     ### gmp convergence
     data['tolerance_levels'] = tolerance_levels
     calculate_convergence(data, varname = 'gmp', idx = -2)
+
+    # calculate B
+    calculate_B(data)
     
     return data
    

@@ -1,10 +1,10 @@
-import numpy
+import numpy as np
 import json
 import os
 import sys
 
-def parsevalues(line, cast = int, sep = None, idx = 1):
-    return [cast(val.strip(sep)) for val in line.split(sep)[idx:]]
+def parsevalues(line, typecast = int, sep = None, idx = 1):
+    return [typecast(val.strip(sep)) for val in line.split(sep)[idx:]]
 def save_to_json(path, filename, expname,json_path = None, json_name = None):
     """
     Parse results ans save dict to json
@@ -59,30 +59,30 @@ def read_bossout(path, filename, expname):
             line = lines[i]
             if '| Data point added to dataset' in line:
                 line = lines[i+1]
-                xy.append(parsevalues(line,cast = float,idx = 0))
+                xy.append(parsevalues(line,typecast = float,idx = 0))
                 
             elif '| Best acquisition' in line:
                 line = lines[i+1]
-                bestacq.append(parsevalues(line,cast = float,idx = 0))
+                bestacq.append(parsevalues(line,typecast = float,idx = 0))
             
             elif '| Global minimum prediction' in line:
                 line = lines[i+1]
-                gmp.append(parsevalues(line,cast = float,idx = 0))
+                gmp.append(parsevalues(line,typecast = float,idx = 0))
             
             elif '| Global minimum convergence' in line:
                 line = lines[i+1]
-                gmp_convergence.append(parsevalues(line,cast = float,idx = 0))
+                gmp_convergence.append(parsevalues(line,typecast = float,idx = 0))
                 
             elif '| GP model hyperparameters' in line:
                 line = lines[i+1]
-                gp_hyper.append(parsevalues(line,cast = float,idx = 0))
+                gp_hyper.append(parsevalues(line,typecast = float,idx = 0))
             
             elif 'Iteration time [s]:' in line:
-                itertime.append(float(parsevalues(line,cast=str, idx = 3)[0]))
-                totaltime.append(parsevalues(line,cast=float, idx = 7)[0])
+                itertime.append(float(parsevalues(line,typecast=str, idx = 3)[0]))
+                totaltime.append(parsevalues(line,typecast=float, idx = 7)[0])
             
             elif '| Objective function evaluated, time [s]' in line:
-                acqtime.append(parsevalues(line,cast=float, idx = 6)[0])
+                acqtime.append(parsevalues(line,typecast=float, idx = 6)[0])
                 
             elif 'initpts' in line and ret['initpts'] is None:
                 ret['initpts'] = parsevalues(line)
@@ -90,7 +90,26 @@ def read_bossout(path, filename, expname):
                 ret['iterpts'] = parsevalues(line)
             elif 'num_tasks' in line:
                 ret['num_tasks'] = parsevalues(line)[0]
-    
+            elif 'bounds' in line:
+                bounds = parsevalues(' '.join(parsevalues(line, typecast = str,
+                                             idx = 1)), typecast = 'str',sep = ';')
+                ret['bounds']  =  [parsevalues(bound) for bound in bounds]
+            elif 'kernel' in line:
+                ret['kernel'] = parsevalues(line, typecast = str, idx = 1)
+            elif 'yrange' in line:
+                ret['yrange'] = parsevalues(line, typecast = str, idx = 1)
+            elif 'thetainit' in line:
+                ret['thetainit'] = parsevalues(line, typecast = str, idx = 1)
+            elif 'thetapriorparam' in line:
+                priorparams = parsevalues(' '.join(parsevalues(line, typecast = str,
+                                            idx = 1)), typecast = 'str', sep = ';')
+                ret['thetapriorparam'] = [parsevalues(priorparam, typecast = float) for priorparam in priorparams]
+    ret['tasks'] = len(np.unique(np.array(xy)[:,-2]))
+    if  ret['tasks'] not in [1,2,3]: # old boss
+        ret['tasks'] = 1
+        ret['dim'] = len(xy[0])-1
+    else: # task source included
+        ret['dim'] = len(xy[0])-2
     ret['xy'] = xy
     ret['acqtime'] = acqtime
     ret['bestacq'] = bestacq
