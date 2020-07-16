@@ -1,6 +1,7 @@
 
 import numpy as np
 import src.io.readwrite as rw
+import src.parse.parse_BOSS_output as parse
 import src.parse.preprocess as preprocess
 import os
 
@@ -34,13 +35,13 @@ rule parse_and_preprocess:
         for infile, rawname, outfile in zip(input[1:], RAW_NAME, output):
             outfile = f'{outfile}'
             name = '_'.join(rawname.split('/exp_'))
-            line = f'python3 src/parse/parse_BOSS_output.py {infile} {name} {outfile}'
-            shell(line)
+            parse.parse(infile, name, outfile)
 
         # UNPREPROCESSED boss.out
         # detect folders
         PARSED_wildcard = glob_wildcards('processed_data/{exp_folder}/{exp_file}.json')
         PARSED_FOLDERS = np.unique(list(PARSED_wildcard.exp_folder))
+        print(PARSED_FOLDERS)
         # detect files inside folders
         PARSED_FILELISTS = [] # list of lists of files inside each folder
         for folder in PARSED_FOLDERS:
@@ -90,9 +91,3 @@ rule parse_and_preprocess:
                 data = preprocess.preprocess(data, tolerances)
                 rw.save_json(data, f'processed_data/{folder}/',f'{filename}.json')
             
-
-
-            
-
-
-

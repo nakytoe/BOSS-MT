@@ -92,8 +92,8 @@ def read_bossout(path, filename, expname):
                 ret['num_tasks'] = parsevalues(line)[0]
             elif 'bounds' in line:
                 bounds = parsevalues(' '.join(parsevalues(line, typecast = str,
-                                             idx = 1)), typecast = 'str',sep = ';')
-                ret['bounds']  =  [parsevalues(bound) for bound in bounds]
+                                             idx = 1)), typecast = str,sep = ';')
+                ret['bounds']  =  [parsevalues(bound, typecast = float) for bound in bounds]
             elif 'kernel' in line:
                 ret['kernel'] = parsevalues(line, typecast = str, idx = 1)
             elif 'yrange' in line:
@@ -102,7 +102,7 @@ def read_bossout(path, filename, expname):
                 ret['thetainit'] = parsevalues(line, typecast = str, idx = 1)
             elif 'thetapriorparam' in line:
                 priorparams = parsevalues(' '.join(parsevalues(line, typecast = str,
-                                            idx = 1)), typecast = 'str', sep = ';')
+                                            idx = 1)), typecast = str, sep = ';')
                 ret['thetapriorparam'] = [parsevalues(priorparam, typecast = float) for priorparam in priorparams]
     ret['tasks'] = len(np.unique(np.array(xy)[:,-2]))
     if  ret['tasks'] not in [1,2,3]: # old boss
@@ -124,12 +124,10 @@ def read_bossout(path, filename, expname):
     
     return ret
 
-if __name__=='__main__':
-    ### give boss.out and output.json as parameters
-    args = sys.argv[1:]
-    infile = args[0]
-    expname = args[1]
-    outfile = args[2].split('.json')[0]
-    print("input: ", infile)
+def parse(inputfilepath, expname, outputfilepath):
+    outfile = outputfilepath.split('.json')[0]
+    print("input: ", inputfilepath)
     print("output: ", outfile)
-    save_to_json('', infile, expname, '', outfile)
+    save_to_json('', inputfilepath, expname, '', outfile)
+
+    

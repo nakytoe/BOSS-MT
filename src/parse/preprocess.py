@@ -72,8 +72,8 @@ def calculate_B(data):
         data['B'] = []
         tasks = data['tasks']
         for row in data['GP_hyperparam']:
-            W = np.array(row[dim:dim*tasks]).reshape((-1,tasks))
-            Kappa = np.diag(row[dim*tasks:])
+            W = np.array(row[dim:-tasks]).reshape((-1,tasks))
+            Kappa = np.diag(row[-tasks:])
             B = W.dot(W.T) + Kappa
             data['B'].append([b for b in B.flatten()])
 
