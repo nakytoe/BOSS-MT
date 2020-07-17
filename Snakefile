@@ -67,7 +67,8 @@ rule parse_and_preprocess:
                 bestacq = preprocess.get_bestacq(data)
                 bestacqs.append(bestacq[-1])
             # select lowest observed value
-            truemin = [min(bestacqs)]
+            bestacqs = np.array(bestacqs)
+            truemin = [list(bestacqs[np.argmin(bestacqs[:,-1])[0],:])]
             # save truemin ad y_offset and offset all y values accordingly
             for filename in PARSED_DICT[folder]: # load all baseline experiments
                 data = rw.load_json(f'processed_data/{folder}/',f'{filename}.json')

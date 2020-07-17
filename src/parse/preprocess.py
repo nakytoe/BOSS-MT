@@ -14,7 +14,7 @@ def y_offset(data):
     """
     Function to offset y values
     """
-    y_offset = data['truemin']
+    y_offset = data['truemin'][-1]
 
     for val in data['gmp']:
         val[-2] = (val[-2]-y_offset[0])
