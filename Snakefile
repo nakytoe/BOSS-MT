@@ -3,6 +3,8 @@ import numpy as np
 import src.io.readwrite as rw
 import src.parse.parse_BOSS_output as parse
 import src.parse.preprocess as preprocess
+import src.analyse.sumstat as sumstat
+
 import os
 
 # define all inputs and outputs
@@ -17,8 +19,26 @@ RAW_NAME = RAW_wildcard.raw_name
 rule all:
     input:
         expand('processed_data/{raw_name}.json',
-                raw_name = RAW_NAME)
+                raw_name = RAW_NAME),
+        'results/tables/sobol_sumstat.tex'
         
+# UNPREPROCESSED boss.out
+        # detect folders
+if True:
+    if True:
+        PARSED_wildcard = glob_wildcards('processed_data/{exp_folder}/{exp_file}.json')
+        PARSED_FOLDERS = np.unique(list(PARSED_wildcard.exp_folder))
+        print(PARSED_FOLDERS)
+        # detect files inside folders
+        PARSED_FILELISTS = [] # list of lists of files inside each folder
+        for folder in PARSED_FOLDERS:
+            searchstring = ''.join([f'processed_data/{folder}/','{exp_file}.json'])
+            parsed_filelist = glob_wildcards(searchstring).exp_file
+            PARSED_FILELISTS.append(parsed_filelist)
+
+        PARSED_DICT = {}
+        for folder, filelist in zip(PARSED_FOLDERS, PARSED_FILELISTS):
+            PARSED_DICT[folder] = filelist
 
 # parse data from boss.out
 rule parse_and_preprocess:
@@ -37,21 +57,7 @@ rule parse_and_preprocess:
             name = '_'.join(rawname.split('/exp_'))
             parse.parse(infile, name, outfile)
 
-        # UNPREPROCESSED boss.out
-        # detect folders
-        PARSED_wildcard = glob_wildcards('processed_data/{exp_folder}/{exp_file}.json')
-        PARSED_FOLDERS = np.unique(list(PARSED_wildcard.exp_folder))
-        print(PARSED_FOLDERS)
-        # detect files inside folders
-        PARSED_FILELISTS = [] # list of lists of files inside each folder
-        for folder in PARSED_FOLDERS:
-            searchstring = ''.join([f'processed_data/{folder}/','{exp_file}.json'])
-            parsed_filelist = glob_wildcards(searchstring).exp_file
-            PARSED_FILELISTS.append(parsed_filelist)
-
-        PARSED_DICT = {}
-        for folder, filelist in zip(PARSED_FOLDERS, PARSED_FILELISTS):
-            PARSED_DICT[folder] = filelist
+        
         # preprocess
         config = rw.load_yaml('src/config/parse_and_preprocess/','preprocess.yaml')
         tolerances = config['tolerances']
@@ -65,10 +71,10 @@ rule parse_and_preprocess:
                 print(filename)
                 data = rw.load_json(f'processed_data/{folder}/',f'{filename}.json')
                 bestacq = preprocess.get_bestacq(data)
-                bestacqs.append(bestacq[-1])
+                bestacqs.append(bestacq)
             # select lowest observed value
             bestacqs = np.array(bestacqs)
-            truemin = [list(bestacqs[np.argmin(bestacqs[:,-1])[0],:])]
+            truemin = [list(bestacqs[np.argmin(bestacqs[:,-1]),:])]
             # save truemin ad y_offset and offset all y values accordingly
             for filename in PARSED_DICT[folder]: # load all baseline experiments
                 data = rw.load_json(f'processed_data/{folder}/',f'{filename}.json')
@@ -92,3 +98,21 @@ rule parse_and_preprocess:
                 data = preprocess.preprocess(data, tolerances)
                 rw.save_json(data, f'processed_data/{folder}/',f'{filename}.json')
             
+rule sumstat:
+    input:
+        'src/config/analysis/sumstat.yaml',
+        expand('processed_data/{raw_name}.json',
+                raw_name = RAW_NAME)
+    output:
+        'results/tables/sobol_sumstat.tex'
+    run:
+        config = rw.load_yaml('src/config/analysis/', 'sumstat.yaml')
+        sobol_folders = []
+        for foldername in config['sobol']:
+            sobol_folder = []
+            for filename in PARSED_DICT[foldername]:
+                data = rw.load_json(f'processed_data/{foldername}/',f'{filename}.json')
+                sobol_folder.append(data)
+            sobol_folders.append(sobol_folder)
+        table, colnames, rownames = sumstat.summarize_folders_fx(sobol_folders)
+        rw.write_table_tex(table, output[0], colnames, rownames)

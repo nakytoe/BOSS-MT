@@ -23,4 +23,24 @@ def load_yaml(path, filename):
     """
     with open(f'{path}{filename}', 'r') as f:
         return yaml.load(f, Loader=yaml.FullLoader)
-        
+
+
+def textabline(row):
+    line = ' & '.join(row)
+    line = f'{line} \\\\ \n'
+    return line
+def write_table_tex(table, filepath, colnames = None, rownames = None):
+    lines = []
+    with open(filepath, 'w') as f:
+        if rownames is not None:
+            lines.append(textabline(rownames))
+        if colnames is None:
+            for row in table:
+                row = ['{:.3f}'.format(val) for val in row]
+                lines.append(textabline(row))
+        else:
+            for row, colname in zip(table, colnames):
+                row = ['{:.3f}'.format(val) for val in row]
+                row.insert(0, colname)
+                lines.append(textabline(row))
+        f.writelines(lines)
