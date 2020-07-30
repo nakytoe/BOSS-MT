@@ -80,7 +80,7 @@ def plot_priors_for_2_tasks(a,b,filepath):
     ax.hist(kappa + w1**2, 30, density = True,
             label = 'w_1^2 + kappa', color = 'blue')
     ax.plot(gammax, gammay, label = f'Ga(a,b)', color = 'red', linestyle = 'dashed')
-    ax.legend(title = 'W_rank = 1 \nkappa ~Ga(a,b)\n w ~N(-1,1)',
+    ax.legend(title = 'W_rank = 1 \nkappa ~Ga(a,b)\n w ~U(-1,1)',
             frameon = False)
     # 1b) cross covariance
     ax = axs[1,0]
