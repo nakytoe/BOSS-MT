@@ -51,7 +51,7 @@ def plot_priors_for_1_task(a,b,filepath):
 
     axs[0].set_ylabel('prior pdf')
     for ax, number in zip(axs, range(1,4)):
-        ax.set_title(f'{number}a)', loc = 'left')
+        ax.set_title(f'{number})', loc = 'left')
         ax.spines['bottom'].set_visible(False)
         ax.spines['left'].set_visible(False)
         ax.spines['right'].set_visible(False)
