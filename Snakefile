@@ -99,6 +99,7 @@ rule parse_and_preprocess:
                 rw.save_json(data, f'processed_data/{folder}/',f'{filename}.json')
             
 rule sumstat:
+    # calculate summary statistics for the experiments
     input:
         'src/config/analysis/sumstat.yaml',
         expand('processed_data/{raw_name}.json',
@@ -107,6 +108,7 @@ rule sumstat:
         'results/tables/sobol_sumstat.tex'
     run:
         config = rw.load_yaml('src/config/analysis/', 'sumstat.yaml')
+        # sobol experiments
         sobol_folders = []
         for foldername in config['sobol']:
             sobol_folder = []
@@ -116,3 +118,14 @@ rule sumstat:
             sobol_folders.append(sobol_folder)
         table, colnames, rownames = sumstat.summarize_folders_fx(sobol_folders)
         rw.write_table_tex(table, output[0], colnames, rownames)
+
+rule prior_hypothesis:
+    """
+    visualize prior hypothesis
+    independent from experiment data
+    """
+    output:
+        "figures/prior_hypothesis_1_task_shape_2_rate_10.pdf",
+        "figures/prior_hypothesis_2_task_shape_2_rate_10.pdf"
+    shell:
+        "python3 src/plot/plot_w_kappa_prior_hypothesis.py 2 10 {output}"
