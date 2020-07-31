@@ -12,9 +12,14 @@ import os
 # RAW boss.out
 RAW_wildcard = glob_wildcards('data/experiments/{raw_name}/boss.out')
 RAW_NAME = RAW_wildcard.raw_name
-
-
-
+PARSED_DICT = {}
+for rawname in RAW_NAME:
+    exp_folder = rawname.split('/')[0]
+    exp = rawname.split('/')[1]
+    if exp_folder not in PARSED_DICT:
+        PARSED_DICT[exp_folder] = [exp]
+    else:
+        PARSED_DICT[exp_folder].append(exp)
 ## RULES
 rule all:
     input:
@@ -24,21 +29,7 @@ rule all:
         
 # UNPREPROCESSED boss.out
         # detect folders
-if True:
-    if True:
-        PARSED_wildcard = glob_wildcards('processed_data/{exp_folder}/{exp_file}.json')
-        PARSED_FOLDERS = np.unique(list(PARSED_wildcard.exp_folder))
-        print(PARSED_FOLDERS)
-        # detect files inside folders
-        PARSED_FILELISTS = [] # list of lists of files inside each folder
-        for folder in PARSED_FOLDERS:
-            searchstring = ''.join([f'processed_data/{folder}/','{exp_file}.json'])
-            parsed_filelist = glob_wildcards(searchstring).exp_file
-            PARSED_FILELISTS.append(parsed_filelist)
 
-        PARSED_DICT = {}
-        for folder, filelist in zip(PARSED_FOLDERS, PARSED_FILELISTS):
-            PARSED_DICT[folder] = filelist
 
 # parse data from boss.out
 rule parse_and_preprocess:
@@ -83,20 +74,21 @@ rule parse_and_preprocess:
                 rw.save_json(data, f'processed_data/{folder}/',f'{filename}.json')
                     
         # other experiments
-        experiments = config['experiments']
-        for folder in list(experiments.keys()):
-            truemin = []
-            # read truemin values from baselines
-            for baseline_folder in experiments[folder]:
-                baseline_file = PARSED_DICT[baseline_folder][0]
-                data = rw.load_json(f'processed_data/{baseline_folder}/',f'{baseline_file}.json')
-                truemin.append(data['truemin'][0])
-            # save truemin values to experiments
-            for filename in PARSED_DICT[folder]:
-                data = rw.load_json(f'processed_data/{folder}/',f'{filename}.json')
-                data['truemin'] = truemin
-                data = preprocess.preprocess(data, tolerances)
-                rw.save_json(data, f'processed_data/{folder}/',f'{filename}.json')
+        if 'experiments' in config:
+            experiments = config['experiments']
+            for folder in list(experiments.keys()):
+                truemin = []
+                # read truemin values from baselines
+                for baseline_folder in experiments[folder]:
+                    baseline_file = PARSED_DICT[baseline_folder][0]
+                    data = rw.load_json(f'processed_data/{baseline_folder}/',f'{baseline_file}.json')
+                    truemin.append(data['truemin'][0])
+                # save truemin values to experiments
+                for filename in PARSED_DICT[folder]:
+                    data = rw.load_json(f'processed_data/{folder}/',f'{filename}.json')
+                    data['truemin'] = truemin
+                    data = preprocess.preprocess(data, tolerances)
+                    rw.save_json(data, f'processed_data/{folder}/',f'{filename}.json')
             
 rule sumstat:
     # calculate summary statistics for the experiments
