@@ -34,6 +34,9 @@ def calc_fx_sumstat(folder):
     # amplitude
     A = (max(fxlist)-min(fxlist))/2
     ret.append(A)
+    # rate parameter for variance prior
+    rate = 2/(A**2)
+    ret.append(rate)
     return ret
 
 def summarize_folders_fx(folders):
@@ -44,9 +47,9 @@ def summarize_folders_fx(folders):
     """
     N_f = len(folders)
     colnames = get_exp_namebases(folders)
-    rownames = ['exp', 'N_\{exp\}','m(\\f\{\\vx_\\obsorder\})', 'var(\\f\{\\vx_\\obsorder\})',
-                 'min(\\f\{\\vx_\\obsorder\})', 'max(\\f\{\\vx_\\obsorder\})',
-                 'A(\\f\{\\vx_\\obsorder\})']
+    rownames = ['exp','$N_{exp}$', '$m(\f{\vx})$',
+     '$var(\f{\vx})$', '$min(\f{\vx})$', '$max(\f{\vx})$', '$A(\f{\vx})$',
+     '\sigma^2 prior rate' ]
     ret = []
     for folder in folders:
         sumstat = calc_fx_sumstat(folder)
