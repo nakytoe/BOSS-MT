@@ -117,7 +117,8 @@ rule prior_hypothesis:
     independent from experiment data
     """
     output:
-        "figures/prior_hypothesis_1_task_shape_2_rate_10.pdf",
-        "figures/prior_hypothesis_2_task_shape_2_rate_10.pdf"
+        "figures/prior_hypothesis_1_task_shape_2_amplitude_10.pdf",
+        "figures/prior_hypothesis_2_task_shape_2_amplitude_10.pdf",
+        "figures/prior_hypothesis_sumstat_amplitude.pdf"
     shell:
         "python3 src/plot/plot_w_kappa_prior_hypothesis.py 2 10 {output}"
