@@ -126,8 +126,6 @@ def read_bossout(path, filename, expname):
 
 def parse(inputfilepath, expname, outputfilepath):
     outfile = outputfilepath.split('.json')[0]
-    print("input: ", inputfilepath)
-    print("output: ", outfile)
     save_to_json('', inputfilepath, expname, '', outfile)
 
     

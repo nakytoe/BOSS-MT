@@ -59,8 +59,7 @@ rule parse_and_preprocess:
             bestacqs = []
             get_truemin_from = baselines[folder]
             for filename in PARSED_DICT[get_truemin_from]: # load all baseline experiments
-                print(filename)
-                data = rw.load_json(f'processed_data/{folder}/',f'{filename}.json')
+                data = rw.load_json(f'processed_data/{get_truemin_from}/',f'{filename}.json')
                 bestacq = preprocess.get_bestacq(data)
                 bestacqs.append(bestacq)
             # select lowest observed value
