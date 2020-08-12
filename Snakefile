@@ -121,3 +121,16 @@ rule prior_hypothesis:
         "figures/prior_hypothesis_sumstat_amplitude.pdf"
     shell:
         "python3 src/plot/plot_w_kappa_prior_hypothesis.py 2 10 {output}"
+    
+rule prior_selection_results:
+    """
+    Plot results for testing prior hypothesis
+    """
+    input:
+        expand('processed_data/{raw_name}.json',
+                raw_name = RAW_NAME)
+    output:
+        "figures/prior_heuristic_results_1_task.pdf",
+        "figures/prior_heuristic_results_2_task.pdf"
+    shell:
+        "python3 src/plot/plot_hyperparam_prior_results.py"
