@@ -4,6 +4,7 @@ import src.io.readwrite as rw
 import src.parse.parse_BOSS_output as parse
 import src.parse.preprocess as preprocess
 import src.analyse.sumstat as sumstat
+import src.plot.plot_convergence as plot_convergence
 
 import os
 
@@ -127,10 +128,30 @@ rule prior_selection_results:
     Plot results for testing prior hypothesis
     """
     input:
+        'src/config/plot/prior_selection_convergence.yaml',
         expand('processed_data/{raw_name}.json',
                 raw_name = RAW_NAME)
     output:
         "figures/prior_heuristic_results_1_task.pdf",
-        "figures/prior_heuristic_results_2_task.pdf"
-    shell:
-        "python3 src/plot/plot_hyperparam_prior_results.py"
+        "figures/prior_heuristic_results_2_task.pdf",
+        "figures/prior_selection_convergence_1_task.pdf",
+        "figures/prior_selection_convergence_2_task.pdf"
+    run:
+        # hyperparam distributions
+        # the following line will cause a warning. Apparently launching another python script 
+        # that makes graphs is hazardous. However, it still works so I let it be.
+        os.system("python3 src/plot/plot_hyperparam_prior_results.py")
+        # convergence
+        config = rw.load_yaml('src/config/plot/','prior_selection_convergence.yaml')
+        if 'figures' in config:
+            for figurename in config['figures'].keys():
+                folders = []
+                for foldername in config['figures'][figurename]:
+                    folder = []
+                    for filename in PARSED_DICT[foldername]:
+                        data = rw.load_json(f'processed_data/{foldername}/',f'{filename}.json')
+                        folder.append(data)
+                    folders.append(folder)
+                plot_convergence.plot_convergence_iter_time_distraction(folders, f'figures/{figurename}.pdf')
+
+
