@@ -166,7 +166,7 @@ def plot_priors_for_1_task(shape,amplitude,filepath):
         color = 'blue')
     ax.set_title('3)', loc = 'left')
     ax.plot(gammax, gammay, label = f'Ga(a,b)', color = 'red', linestyle = 'dashed')
-    ax.legend(title = 'W_rank = 1\nkappa ~Ga(1,b)\nw ~N(0,1/b)',
+    ax.legend(title = 'W_rank = 1\nkappa ~Ga(1,b)\nw ~N(0,1/sqrt(b))',
             frameon = False)
     # NORMAL SQUARED
     ax = axs[2]
