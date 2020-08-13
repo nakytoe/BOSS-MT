@@ -212,7 +212,7 @@ for i in range(3,8):
             linestyle = 'dotted', label = 'range')
     ax.plot(x,least, color = 'grey', linestyle = 'dotted')
     title = folders[i][0]['name'].split('_')[0]
-    ax.set_title(f'{1+i}a) {title}', loc = 'left')
+    ax.set_title(f'{i-1}a) {title}', loc = 'left')
     ax.set_ylabel('HF autocovariance')
     ax.set_xlabel('BO iteration')
     ax.spines['right'].set_visible(False)
@@ -236,7 +236,7 @@ for i in range(3,8):
             linestyle = 'dotted', label = 'range')
     ax.plot(x,least, color = 'grey', linestyle = 'dotted')
     title = folders[i][0]['name'].split('_')[0]
-    ax.set_title(f'{1+i}b) {title}', loc = 'left')
+    ax.set_title(f'{i-1}b) {title}', loc = 'left')
     ax.set_ylabel('cross covariance')
     ax.set_xlabel('BO iteration')
     ax.spines['right'].set_visible(False)
@@ -260,7 +260,7 @@ for i in range(3,8):
             linestyle = 'dotted', label = 'range')
     ax.plot(x,least, color = 'grey', linestyle = 'dotted')
     title = folders[i][0]['name'].split('_')[0]
-    ax.set_title(f'{1+i}c) {title}', loc = 'left')
+    ax.set_title(f'{i-1}c) {title}', loc = 'left')
     ax.set_ylabel('LF autocovariance')
     ax.set_xlabel('BO iteration')
     ax.spines['right'].set_visible(False)

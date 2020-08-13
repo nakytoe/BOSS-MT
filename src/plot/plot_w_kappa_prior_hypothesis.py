@@ -40,7 +40,7 @@ def plot_prior_sumstat_amplitude(filepath):
         return [sumstat(auto), sumstat(cross)]
 
     heuristics = [h0,h1,h2,h3]
-    names = ['1', '2', '3', '4']
+    names = ['0', '2.2', '2.3', '2.4']
     markers = ['o', 'v', 'x', '+']
     colors = ['red', 'orange','dodgerblue', 'blue']
     first_round = True
@@ -154,8 +154,8 @@ def plot_priors_for_1_task(shape,amplitude,filepath):
     variance = np.random.gamma(shape, 1/rate, 1000)
     ax.hist(variance, 30, density = True,
             label = 'kappa', color = 'blue')
-    ax.plot(gammax, gammay, label = f'Ga(a,b)', color = 'red', linestyle = 'dashed')
-    ax.legend(title = 'W_rank = 0\nkappa ~Ga(a,b)\nw = 0',
+    ax.plot(gammax, gammay, label = f'Ga(2,B)', color = 'red', linestyle = 'dashed')
+    ax.legend(title = 'W_rank = 0\nkappa ~Ga(2,B)\nw = 0',
             frameon = False)
 
     ax = axs[1]
@@ -165,21 +165,23 @@ def plot_priors_for_1_task(shape,amplitude,filepath):
     ax.hist(v, 30, density = True, label = 'w^2 + kappa',
         color = 'blue')
     ax.set_title('3)', loc = 'left')
-    ax.plot(gammax, gammay, label = f'Ga(a,b)', color = 'red', linestyle = 'dashed')
-    ax.legend(title = 'W_rank = 1\nkappa ~Ga(1,b)\nw ~N(0,1/sqrt(b))',
+    ax.plot(gammax, gammay, label = f'Ga(2,B)', color = 'red', linestyle = 'dashed')
+    ax.legend(title = 'W_rank = 1\nkappa ~Ga(1,B)\nw ~N(0,1/sqrt(B))',
             frameon = False)
     # NORMAL SQUARED
     ax = axs[2]
     w = (np.random.normal(np.sqrt(shape/rate)*0.9, 1/(shape*np.sqrt(rate)), 1000))**2
     ax.hist(w, 30, density = True, label = 'w^2',
         color = 'blue')
-    ax.plot(gammax, gammay, label = f'Ga(a,b)', color = 'red', linestyle = 'dashed')
-    ax.legend(title = 'W_rank = 1\nkappa = 0\nw ~N(0.9*sqrt(a/b), 1/(a*sqrt(b)))',
+    ax.plot(gammax, gammay, label = f'Ga(2,B)', color = 'red', linestyle = 'dashed')
+    ax.legend(title = 'W_rank = 1\nkappa = 0\nw ~N(0.9*sqrt(2/B), 1/(2*sqrt(B)))',
             frameon = False)
 
     axs[0].set_ylabel('prior pdf')
-    for ax, number in zip(axs, range(1,4)):
-        ax.set_title(f'{number})', loc = 'left')
+    for ax, title in zip(axs, ['1) prior heuristic 0 and 1.1',
+                            '2) prior heuristic 1.2',
+                            '3) prior heuristic 1.3']):
+        ax.set_title(f'{title}', loc = 'left')
         ax.spines['bottom'].set_visible(False)
         ax.spines['left'].set_visible(False)
         ax.spines['right'].set_visible(False)
@@ -206,8 +208,8 @@ def plot_priors_for_2_tasks(shape,amplitude,filepath):
     ax = axs[0,0]
     ax.hist(kappa + w1**2, 30, density = True,
             label = 'w_1^2 + kappa', color = 'blue')
-    ax.plot(gammax, gammay, label = f'Ga(a,b)', color = 'red', linestyle = 'dashed')
-    ax.legend(title = 'W_rank = 1 \nkappa ~Ga(a,b)\n w ~U(-A,A)',
+    ax.plot(gammax, gammay, label = f'Ga(2,B)', color = 'red', linestyle = 'dashed')
+    ax.legend(title = 'W_rank = 1 \nkappa ~Ga(2,B)\n w ~U(-A,A)',
             frameon = False)
     # 1b) cross covariance
     ax = axs[1,0]
@@ -222,8 +224,8 @@ def plot_priors_for_2_tasks(shape,amplitude,filepath):
     ax = axs[0,1]
     ax.hist(w1**2+kappa, 30, density = True, label = 'w_1^2 + kappa',
         color = 'blue')
-    ax.plot(gammax, gammay, label = f'Ga(a,b)', color = 'red', linestyle = 'dashed')
-    ax.legend(title ='W_rank = 1 \nkappa ~U(0,A^2)\n w ~N(0.9*sqrt(a/b),1/(a*sqrt(b)))',
+    ax.plot(gammax, gammay, label = f'Ga(2,B)', color = 'red', linestyle = 'dashed')
+    ax.legend(title ='W_rank = 1 \nkappa ~U(0,A^2)\n w ~N(0.9*sqrt(2/B),1/(2*sqrt(B)))',
             frameon = False)
     # 2b) cross covariance
     ax = axs[1,1]
@@ -242,8 +244,8 @@ def plot_priors_for_2_tasks(shape,amplitude,filepath):
     ax.hist(kappa + w1**2, 30, density = True,
             label = 'w_1^2 + kappa',
         color = 'blue')
-    ax.plot(gammax, gammay, label = f'Ga(a,b)', color = 'red', linestyle = 'dashed')
-    ax.legend(title = 'W_rank = 1 \nkappa ~Ga(1,1/b)\n w ~N(0,1/sqrt(b))',
+    ax.plot(gammax, gammay, label = f'Ga(2,B)', color = 'red', linestyle = 'dashed')
+    ax.legend(title = 'W_rank = 1 \nkappa ~Ga(1,1/B)\n w ~N(0,1/sqrt(B))',
             frameon = False)
     # 3b) cross covariance
     ax = axs[1,2]
@@ -261,8 +263,8 @@ def plot_priors_for_2_tasks(shape,amplitude,filepath):
     ax.hist(w1**2+w2**2, 30, density = True,
             label = 'w_11^2 + w_12^2',
         color = 'blue')
-    ax.plot(gammax, gammay, label = f'Ga(a,b)', color = 'red', linestyle = 'dashed')
-    ax.legend(title = 'W_rank = 2 \nkappa = 0\n w ~N(0.9*sqrt(a/(b*2)),\n 1/(a*sqrt(b)))',
+    ax.plot(gammax, gammay, label = f'Ga(2,B)', color = 'red', linestyle = 'dashed')
+    ax.legend(title = 'W_rank = 2 \nkappa = 0\n w ~N(0.9/sqrt(B),\n 1/(2*sqrt(B)))',
             frameon = False)
     # cross covariance
     ax = axs[1,3]
@@ -273,8 +275,12 @@ def plot_priors_for_2_tasks(shape,amplitude,filepath):
 
     axs[0,0].set_ylabel('prior pdf')
     axs[1,0].set_ylabel('prior pdf')
-    for ax, number in zip(axs[0,:], range(1,5)):
-        ax.set_title(f'{number}a)', loc = 'left')
+    for ax, number, title in zip(axs[0,:], range(1,5),
+                            ['prior heuristic 2.1',
+                            'prior heuristic 2.2',
+                            'prior heuristic 2.3',
+                            'prior heuristic 2.4']):
+        ax.set_title(f'{number}a) {title}', loc = 'left')
         
         ax.spines['bottom'].set_visible(False)
         ax.spines['left'].set_visible(False)
