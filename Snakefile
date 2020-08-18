@@ -56,16 +56,23 @@ rule parse_and_preprocess:
         # baselines
         baselines = config['baselines']
         for folder in list(baselines.keys()): # loop through baselines
-            print(folder)
             bestacqs = []
             get_truemin_from = baselines[folder]
+            truemin_precalculated = None
             for filename in PARSED_DICT[get_truemin_from]: # load all baseline experiments
                 data = rw.load_json(f'processed_data/{get_truemin_from}/',f'{filename}.json')
                 bestacq = preprocess.get_bestacq(data)
                 bestacqs.append(bestacq)
+                if 'truemin' in data: # if truemin has been calculated, use it
+                    print(data['truemin'])
+                    truemin_precalculated = data['truemin']
+                    break
             # select lowest observed value
-            bestacqs = np.array(bestacqs)
-            truemin = [list(bestacqs[np.argmin(bestacqs[:,-1]),:])]
+            if truemin_precalculated is None:
+                bestacqs = np.array(bestacqs)
+                truemin = [list(bestacqs[np.argmin(bestacqs[:,-1]),:])]
+            else:
+                truemin = truemin_precalculated
             # save truemin ad y_offset and offset all y values accordingly
             for filename in PARSED_DICT[folder]: # load all baseline experiments
                 data = rw.load_json(f'processed_data/{folder}/',f'{filename}.json')
