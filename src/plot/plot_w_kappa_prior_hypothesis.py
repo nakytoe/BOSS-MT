@@ -153,9 +153,9 @@ def plot_priors_for_1_task(shape,amplitude,filepath):
     ax = axs[0]
     variance = np.random.gamma(shape, 1/rate, 1000)
     ax.hist(variance, 30, density = True,
-            label = 'kappa', color = 'blue')
+            label = 'kappa or variance', color = 'blue')
     ax.plot(gammax, gammay, label = f'Ga(2,B)', color = 'red', linestyle = 'dashed')
-    ax.legend(title = 'W_rank = 0\nkappa ~Ga(2,B)\nw = 0',
+    ax.legend(title = 'W_rank = 0\nkappa or variance ~Ga(2,B)\nw = 0',
             frameon = False)
 
     ax = axs[1]
@@ -187,6 +187,7 @@ def plot_priors_for_1_task(shape,amplitude,filepath):
         ax.spines['right'].set_visible(False)
         ax.spines['top'].set_visible(False)
         ax.set_xlabel('autocovariance')
+        ax.tick_params('x',labelrotation=45)
     plt.savefig(filepath)
 
 def plot_priors_for_2_tasks(shape,amplitude,filepath):
@@ -287,6 +288,7 @@ def plot_priors_for_2_tasks(shape,amplitude,filepath):
         ax.spines['right'].set_visible(False)
         ax.spines['top'].set_visible(False)
         ax.set_xlabel('autocovariance')
+        ax.tick_params('x',labelrotation=45)
         
     for ax, number in zip(axs[1,:], range(1,5)):
         ax.set_title(f'{number}b)', loc = 'left')
@@ -296,6 +298,7 @@ def plot_priors_for_2_tasks(shape,amplitude,filepath):
         ax.spines['top'].set_visible(False)
         ax.legend(frameon = False)
         ax.set_xlabel('cross covariance')
+        ax.tick_params('x',labelrotation=45)
     plt.savefig(filepath)
 
 
@@ -305,8 +308,8 @@ if __name__=='__main__':
     make prior plots for 1 and 2 task coregionalization matrix
     """
     args = sys.argv[1:]
-    a = int(args[0])
-    b = int(args[1])
+    a = float(args[0])
+    b = float(args[1])
     filepath_1task = args[2]
     filepath_2task = args[3]
     plot_priors_for_1_task(a,b, filepath_1task)

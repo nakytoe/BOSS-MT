@@ -30,11 +30,54 @@ def experiments_mean_sd(experiments, variable, idx, use_abs = False):
     return m, sd, least, most
 
 """
+plot results for sobol vs random initialization comparison
+this is used to see how much data effects the variability of the results compared to
+hyperparameter fitting process
+"""
+
+a1a3 = load_folder('processed_data/a1a3', 'exp', 30)
+a1a2 = load_folder('processed_data/a1a2', 'exp', 30)
+
+fig, axs = plt.subplots(1,2,
+                        figsize = (10,5),
+                       sharey = 'all', sharex = 'all')
+
+folders = [a1a2, a1a3]
+inittypes = ['identical sobol initialization', 'random (uniform) initialization'] 
+for i in range(2):
+    # kappa
+    ax = axs[i]
+    m, sd, least, most = experiments_mean_sd(folders[i],
+                            'GP_hyperparam', 2)
+    x = np.arange(1, len(m)+1)
+    ax.plot(x,m, color = 'black', label = 'mean')
+    ax.plot(x,m+sd, color = 'blue',
+            linestyle = 'dashed', label = 'sd')
+    if np.all(least <= m -sd): # when kappa encodes variance
+        ax.plot(x,m-sd, color = 'blue', 
+            linestyle = 'dashed')
+    ax.plot(x,most, color = 'grey',
+            linestyle = 'dotted', label = 'range')
+    ax.plot(x,least, color = 'grey', linestyle = 'dotted')
+    title = folders[i][0]['name'].split('_')[0]
+    ax.set_title(f'{1+i}) {title}: {inittypes[i]}', loc = 'left')
+    ax.set_ylabel('variance')
+    ax.set_xlabel('BO iteration')
+    ax.spines['right'].set_visible(False)
+    ax.spines['top'].set_visible(False)
+    ax.spines['left'].set_visible(False)
+    ax.spines['bottom'].set_visible(False)
+    ax.legend()
+
+plt.savefig('figures/random_sobol_init_variance_variability.pdf')
+
+
+"""
 Plot results for 1 task heuristics
 """
 # load data
 
-a1a3 = load_folder('processed_data/a1a3', 'exp', 30)
+
 a2a1 = load_folder('processed_data/a2a1', 'exp', 30)
 a2a2 = load_folder('processed_data/a2a2', 'exp', 30)
 a2a3 = load_folder('processed_data/a2a3', 'exp', 30)
