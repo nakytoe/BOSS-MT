@@ -55,3 +55,45 @@ def summarize_folders_fx(folders):
         sumstat = calc_fx_sumstat(folder)
         ret.append(sumstat)
     return ret, colnames, rownames
+
+def calculate_covariance(explist):
+    """
+    calculate covariance matrix for a structure
+    params;
+    explist: list of equally queried sobol experiments from different simulators
+    return;
+    covariance matrix
+    """
+    N = len(explist)
+    covariance_matrix = np.zeros((N,N), dtype = float)
+    for i in range(N):
+        # read observations
+        y1 = np.array(explist[i]['xy'])[:,-1]
+        # center
+        y1 = y1-np.mean(y1)
+        for j in range(N):
+            y2 = np.array(explist[i]['xy'])[:,-1]
+            y2 = y2-np.mean(y2)
+            covariance_matrix[i,j] = np.cov(y1,y2)
+    return covariance_matrix
+
+def calculate_correlation(explist):
+    """
+    calculate correlation matrix for a structure
+    params;
+    explist: list of equally queried sobol experiments from different simulators
+    return;
+    correlation matrix
+    """
+    N = len(explist)
+    corr_matrix = np.zeros((N,N), dtype = float)
+    for i in range(N):
+        # read observations
+        y1 = np.array(explist[i]['xy'])[:,-1]
+        # center
+        y1 = y1-np.mean(y1)
+        for j in range(N):
+            y2 = np.array(explist[i]['xy'])[:,-1]
+            y2 = y2-np.mean(y2)
+            corr_matrix[i,j] = np.corrcoef(y1,y2)
+    return corr_matrix

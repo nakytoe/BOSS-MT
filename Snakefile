@@ -104,10 +104,12 @@ rule sumstat:
         expand('processed_data/{raw_name}.json',
                 raw_name = RAW_NAME)
     output:
-        'results/tables/sobol_sumstat.tex'
+        'results/tables/sobol_sumstat.tex',
+        'results/tables/covariance_alanine2D.tex',
+        'results/tables/covariance_alanine4D.tex'
     run:
         config = rw.load_yaml('src/config/analysis/', 'sumstat.yaml')
-        # sobol experiments
+        # calculate summary statistics for sobol experiments
         sobol_folders = []
         for foldername in config['sobol']:
             sobol_folder = []
@@ -117,6 +119,24 @@ rule sumstat:
             sobol_folders.append(sobol_folder)
         table, colnames, rownames = sumstat.summarize_folders_fx(sobol_folders)
         rw.write_table_tex(table, output[0], colnames, rownames)
+        # calculate true covariances and correlation from sobol experiments
+        for expnamelist in config['covariance']:
+            explist = []
+            names = []
+            filename = expnamelist[0]
+            # load data
+            for expname in expnamelist[1]:
+                for filename in PARSED_DICT[expname]:
+                    data = rw.load_json(f'processed_data/{foldername}/',f'{filename}.json')
+                    explist.append(data)
+                    names.append(data['name'])
+            # covariance
+            covariance_matrix = sumstat.calculate_covariance(explist)
+            rw.write_table_tex(covariance_matrix, f'results/tables/covariance_{filename}', colnames = names, rownames = names)
+            # Pearson's correlation coefficient
+            corr_matrix = sumstat.calculate_correlation(explist)
+            rw.write_table_tex(corr_matrix, f'results/tables/correlation_{filename}', colnames = names, rownames = names)
+
 
 rule prior_hypothesis:
     """
@@ -141,8 +161,10 @@ rule prior_selection_results:
     output:
         "figures/prior_heuristic_results_1_task.pdf",
         "figures/prior_heuristic_results_2_task.pdf",
+        "figures/random_sobol_init_variance_variability.pdf",
         "figures/prior_selection_convergence_1_task.pdf",
-        "figures/prior_selection_convergence_2_task.pdf"
+        "figures/prior_selection_convergence_2_task.pdf",
+        "figures/prior_selection_convergence_random_sobol.pdf"
     run:
         # hyperparam distributions
         # the following line will cause a warning. Apparently launching another python script 
