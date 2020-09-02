@@ -34,7 +34,8 @@ def plot_convergence_iter_time_distraction(folders, filename):
         title = folder[0]['name'].split('_')[0]
         ax.set_title(f'{i+1}a) {title}', loc = 'left')
         ax.scatter(times, tolerances, marker = 'x',
-                   color = 'dodgerblue', label = 'observation')
+                   color = 'blue', alpha = 0.5,
+                    label = 'observation')
 
         times_lists = np.array(times_lists, dtype = float)
         times_mean = np.nanmean(times_lists, axis = 0)
@@ -68,7 +69,8 @@ def plot_convergence_iter_time_distraction(folders, filename):
         title = folder[0]['name'].split('_')[0]
         ax.set_title(f'{i+1}b) {title}', loc = 'left')
         ax.scatter(times, tolerances, marker = 'x',
-                   color = 'dodgerblue', label = 'observation')
+                   color = 'blue', alpha = 0.5,
+                    label = 'observation')
 
         times_lists = np.array(times_lists, dtype = float)
         times_mean = np.nanmean(times_lists, axis = 0)
