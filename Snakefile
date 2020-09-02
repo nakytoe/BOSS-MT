@@ -106,7 +106,9 @@ rule sumstat:
     output:
         'results/tables/sobol_sumstat.tex',
         'results/tables/covariance_alanine2D.tex',
-        'results/tables/covariance_alanine4D.tex'
+        'results/tables/covariance_alanine4D.tex',
+        'figures/scatter_trellis_alanine2D.pdf',
+        'figures/scatter_trellis_alanine4D.pdf'
     run:
         config = rw.load_yaml('src/config/analysis/', 'sumstat.yaml')
         # calculate summary statistics for sobol experiments
@@ -123,19 +125,22 @@ rule sumstat:
         for expnamelist in config['covariance']:
             explist = []
             names = []
-            filename = expnamelist[0]
+            saveto = expnamelist[0]
             # load data
             for expname in expnamelist[1]:
                 for filename in PARSED_DICT[expname]:
-                    data = rw.load_json(f'processed_data/{foldername}/',f'{filename}.json')
+                    data = rw.load_json(f'processed_data/{expname}/',f'{filename}.json')
                     explist.append(data)
                     names.append(data['name'])
+            print(names)
             # covariance
             covariance_matrix = sumstat.calculate_covariance(explist)
-            rw.write_table_tex(covariance_matrix, f'results/tables/covariance_{filename}', colnames = names, rownames = names)
+            rw.write_table_tex(covariance_matrix, f'results/tables/covariance_{saveto}.tex', colnames = names, rownames = names)
             # Pearson's correlation coefficient
             corr_matrix = sumstat.calculate_correlation(explist)
-            rw.write_table_tex(corr_matrix, f'results/tables/correlation_{filename}', colnames = names, rownames = names)
+            rw.write_table_tex(corr_matrix, f'results/tables/correlation_{saveto}.tex', colnames = names, rownames = names)
+            # plot scatter trellis
+            sumstat.plot_y_scatter_trellis(explist, f'figures/scatter_trellis_{saveto}.pdf')
 
 
 rule prior_hypothesis:

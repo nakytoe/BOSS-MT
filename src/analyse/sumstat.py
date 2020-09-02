@@ -1,5 +1,5 @@
 import numpy as np
-
+import matplotlib.pyplot as plt
 
 def get_exp_namebases(folders):
     """
@@ -72,9 +72,9 @@ def calculate_covariance(explist):
         # center
         y1 = y1-np.mean(y1)
         for j in range(N):
-            y2 = np.array(explist[i]['xy'])[:,-1]
+            y2 = np.array(explist[j]['xy'])[:,-1]
             y2 = y2-np.mean(y2)
-            covariance_matrix[i,j] = np.cov(y1,y2)
+            covariance_matrix[i,j] = np.cov(np.hstack((y1,y2)))
     return covariance_matrix
 
 def calculate_correlation(explist):
@@ -93,7 +93,49 @@ def calculate_correlation(explist):
         # center
         y1 = y1-np.mean(y1)
         for j in range(N):
-            y2 = np.array(explist[i]['xy'])[:,-1]
+            y2 = np.array(explist[j]['xy'])[:,-1]
             y2 = y2-np.mean(y2)
-            corr_matrix[i,j] = np.corrcoef(y1,y2)
+            corr_matrix[i,j] = np.corrcoef(np.hstack((y1,y2)))
     return corr_matrix
+
+def plot_y_scatter_trellis(explist, figname):
+    # plot scatter plot trellis of sobol queue experiment y observations
+    N = len(explist)
+    fig, axs = plt.subplots(N,N,
+                figsize = (N*5,N*5))
+    for i in range(N):
+        # plot name of the experiment as axis label
+        ax = axs[i,i]
+        ax.axis('off')
+        exp1 = explist[i]
+        name = exp1['name'].split('_')[0]
+        ax.text(0.5, 0.5, f'{name} (kcal/mol)',
+            horizontalalignment='center',
+            verticalalignment='center',
+            fontsize=30,
+            transform=ax.transAxes)
+        # make scatter plots of y values
+        for j in range(i+1, N):
+            ax = axs[i,j]
+            exp1 = explist[j]
+            exp2 = explist[i]
+            x = np.array(exp1['xy'])[:,-1]
+            y = np.array(exp2['xy'])[:,-1]
+            ax.scatter(x,y, marker = 'x',
+                    color = 'blue',
+                    alpha = 0.5)
+            ax.set_xticks(ax.get_yticks())
+            ax.set_yticks(ax.get_xticks())
+            ax.spines['right'].set_visible(False)
+            ax.spines['top'].set_visible(False)
+            ax.spines['left'].set_visible(False)
+            ax.spines['bottom'].set_visible(False)
+        # remove below-diagonal plots
+        for j in range(i):
+            ax = axs[i,j]
+            ax.axis('off')
+    
+    axs[0,N-1].set_xticklabels([])
+    axs[0,N-1].set_yticklabels([])    
+
+    plt.savefig(figname)
