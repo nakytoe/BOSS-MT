@@ -74,7 +74,7 @@ def calculate_covariance(explist):
         for j in range(N):
             y2 = np.array(explist[j]['xy'])[:,-1]
             y2 = y2-np.mean(y2)
-            covariance_matrix[i,j] = np.cov(np.hstack((y1,y2)))
+            covariance_matrix[i,j] = np.cov(np.hstack((y1,y2)), rowvar=False)
     return covariance_matrix
 
 def calculate_correlation(explist):
@@ -95,7 +95,7 @@ def calculate_correlation(explist):
         for j in range(N):
             y2 = np.array(explist[j]['xy'])[:,-1]
             y2 = y2-np.mean(y2)
-            corr_matrix[i,j] = np.corrcoef(np.hstack((y1,y2)))
+            corr_matrix[i,j] = np.corrcoef(y1,y2, rowvar= False)[0,1]
     return corr_matrix
 
 def plot_y_scatter_trellis(explist, figname):
