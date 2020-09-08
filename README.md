@@ -28,7 +28,8 @@ launch the environment\
 <code>conda activate stenthesis></code>\
 and run Snakemake with\
 <code>snakemake</code>.\
-Parsed data is saved under <code>preprocessed_data</code>.\
+Parsed data is saved under <code>processed_data/</code>.\
+Final analysis outputs are stored to <code>results/</code>.\
 To clean all outputs, run\
 <code>snakemake --delete-all-output</code>.
 
