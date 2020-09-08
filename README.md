@@ -20,7 +20,7 @@ The folder structure is the following:
 
 The analysis pipelines in this project are managed by [Snakemake](https://snakemake.readthedocs.io/en/stable/).
 All the analysis is completely reproducible. The main input file for running the analysis is Snakefile, that can be found here in the root folder.
-To run the analysis, install [anaconda](https://www.anaconda.com) virtual environment with the [requirements](), and the command <snakemake>.
+To run the analysis, install [anaconda](https://www.anaconda.com) virtual environment with the [requirements](https://github.com/NuuttiSten/BOSS-MT/blob/master/requirements.txt), and the command snakemake.
 
 Special Gotchas of your projects (Problems you faced, unique elements of your project)
 Technical Description of your project like- Installation, Setup, How to contribute.
