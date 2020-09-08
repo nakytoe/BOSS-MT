@@ -21,9 +21,9 @@ The folder structure is the following:
 The analysis pipelines in this project are managed by [Snakemake](https://snakemake.readthedocs.io/en/stable/).
 All the analysis is completely reproducible. The main input file for running the analysis is Snakefile, that can be found here in the root folder.
 To run the analysis, copy clone this repository\
-<code>git clone </code>\
+<code>git clone git@github.com:NuuttiSten/BOSS-MT.git</code>\
 install [anaconda](https://www.anaconda.com) virtual environment with the [requirements](https://github.com/NuuttiSten/BOSS-MT/blob/master/requirements.txt)\
-<code>conda create --name stenthesis --file requirements.txt </code>,
+<code>conda create --name stenthesis --file requirements.txt </code>,\
 launch the environment\
 <code>conda activate stenthesis></code>\
 and run Snakemake with\
