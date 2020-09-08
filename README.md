@@ -20,13 +20,20 @@ The folder structure is the following:
 
 The analysis pipelines in this project are managed by [Snakemake](https://snakemake.readthedocs.io/en/stable/).
 All the analysis is completely reproducible. The main input file for running the analysis is Snakefile, that can be found here in the root folder.
-To run the analysis, install [anaconda](https://www.anaconda.com) virtual environment with the [requirements](https://github.com/NuuttiSten/BOSS-MT/blob/master/requirements.txt), and the command snakemake.
+To run the analysis, copy clone this repository\
+<code>git clone </code>\
+install [anaconda](https://www.anaconda.com) virtual environment with the [requirements](https://github.com/NuuttiSten/BOSS-MT/blob/master/requirements.txt)\
+<code>conda create --name stenthesis --file requirements.txt </code>,
+launch the environment\
+<code>conda activate stenthesis>
+and run Snakemake with\
+<code>snakemake</code>.\
 
 Special Gotchas of your projects (Problems you faced, unique elements of your project)
-Technical Description of your project like- Installation, Setup, How to contribute.
+Technical Description of your project like- Installation, Setup, How to contribute.\
 
-To cite, use
+To cite, use\
 
-Sten, N. A. 2020. 'Accelerating Bayesian Optimization Structure Search with Transfer Learning'. M.Sc. Thesis. Aalto University. Espoo, Finland. DOI/URN.
-% save to zenodo https://sandbox.zenodo.org/login/
+Sten, N. A. 2020. 'Accelerating Bayesian Optimization Structure Search with Transfer Learning'. M.Sc. Thesis. Aalto University. Espoo, Finland. DOI/URN.\
+% save to zenodo https://sandbox.zenodo.org/login/\
 or load [bibtex citation](https://github.com/NuuttiSten/BOSS-MT/blob/master/sten2020accelerating.bib).
