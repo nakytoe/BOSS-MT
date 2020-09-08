@@ -69,7 +69,7 @@ for i in range(2):
     ax.spines['bottom'].set_visible(False)
     ax.legend()
 
-plt.savefig('figures/random_sobol_init_variance_variability.pdf')
+plt.savefig('results/figures/random_sobol_init_variance_variability.pdf')
 
 
 """
@@ -192,7 +192,7 @@ for i in range(1,5):
     ax.spines['bottom'].set_visible(False)
     ax.legend()
 
-    plt.savefig('figures/prior_heuristic_results_1_task.pdf')
+    plt.savefig('results/figures/prior_heuristic_results_1_task.pdf')
 
 ########
 #
@@ -312,4 +312,4 @@ for i in range(3,8):
     ax.spines['bottom'].set_visible(False)
     ax.legend()
     
-    plt.savefig('figures/prior_heuristic_results_2_task.pdf')
+    plt.savefig('results/figures/prior_heuristic_results_2_task.pdf')

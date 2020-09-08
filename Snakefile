@@ -107,8 +107,8 @@ rule sumstat:
         'results/tables/sobol_sumstat.tex',
         'results/tables/covariance_alanine2D.tex',
         'results/tables/covariance_alanine4D.tex',
-        'figures/scatter_trellis_alanine2D.pdf',
-        'figures/scatter_trellis_alanine4D.pdf'
+        'results/figures/scatter_trellis_alanine2D.pdf',
+        'results/figures/scatter_trellis_alanine4D.pdf'
     run:
         config = rw.load_yaml('src/config/analysis/', 'sumstat.yaml')
         # calculate summary statistics for sobol experiments
@@ -139,8 +139,8 @@ rule sumstat:
             # Pearson's correlation coefficient
             corr_matrix = sumstat.calculate_correlation(explist)
             rw.write_table_tex(corr_matrix, f'results/tables/correlation_{saveto}.tex', colnames = names, rownames = names)
-            # plot scatter trellis
-            sumstat.plot_y_scatter_trellis(explist, f'figures/scatter_trellis_{saveto}.pdf')
+            # plot scatter trellis, to verify that pearsons is a valid measure of correlation
+            sumstat.plot_y_scatter_trellis(explist, f'results/figures/scatter_trellis_{saveto}.pdf')
 
 
 rule prior_hypothesis:
@@ -149,9 +149,9 @@ rule prior_hypothesis:
     independent from experiment data
     """
     output:
-        "figures/prior_hypothesis_1_task_shape_2_amplitude_10.pdf",
-        "figures/prior_hypothesis_2_task_shape_2_amplitude_10.pdf",
-        "figures/prior_hypothesis_sumstat_amplitude.pdf"
+        "results/figures/prior_hypothesis_1_task_shape_2_amplitude_10.pdf",
+        "results/figures/prior_hypothesis_2_task_shape_2_amplitude_10.pdf",
+        "results/figures/prior_hypothesis_sumstat_amplitude.pdf"
     shell:
         "python3 src/plot/plot_w_kappa_prior_hypothesis.py 2 10 {output}"
     
@@ -164,12 +164,12 @@ rule prior_selection_results:
         expand('processed_data/{raw_name}.json',
                 raw_name = RAW_NAME)
     output:
-        "figures/prior_heuristic_results_1_task.pdf",
-        "figures/prior_heuristic_results_2_task.pdf",
-        "figures/random_sobol_init_variance_variability.pdf",
-        "figures/prior_selection_convergence_1_task.pdf",
-        "figures/prior_selection_convergence_2_task.pdf",
-        "figures/prior_selection_convergence_random_sobol.pdf"
+        "results/figures/prior_heuristic_results_1_task.pdf",
+        "results/figures/prior_heuristic_results_2_task.pdf",
+        "results/figures/random_sobol_init_variance_variability.pdf",
+        "results/figures/prior_selection_convergence_1_task.pdf",
+        "results/figures/prior_selection_convergence_2_task.pdf",
+        "results/figures/prior_selection_convergence_random_sobol.pdf"
     run:
         # hyperparam distributions
         # the following line will cause a warning. Apparently launching another python script 
@@ -186,6 +186,6 @@ rule prior_selection_results:
                         data = rw.load_json(f'processed_data/{foldername}/',f'{filename}.json')
                         folder.append(data)
                     folders.append(folder)
-                plot_convergence.plot_convergence_iter_time_distraction(folders, f'figures/{figurename}.pdf')
+                plot_convergence.plot_convergence_iter_time_distraction(folders, f'results/figures/{figurename}.pdf')
 
 
