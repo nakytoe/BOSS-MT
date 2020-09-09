@@ -72,6 +72,21 @@ def select_points(data, N, select_by):
     elif select_by == 'random':
         return random.sample(data, k = N)
 
+        
+def modify_initpts(filepath, N0, N1):
+
+    """
+    modify number of initpts
+    """
+    lines = None
+    with open(filepath, 'r') as f:
+        lines = f.readlines()
+    with open(filepath, 'w') as f:
+        for line in lines:
+            if 'initpts' in line:
+                line = f'{line.split()[0]} {int(N0)} {int(N1)}\n'
+            f.write(line)
+
 def main(inputfile, xdim,
         primary = None, secondary = None,
         N_primary = 0, N_secondary = 0,
@@ -90,6 +105,9 @@ def main(inputfile, xdim,
                 - random: select N points by random
                 - inorder: select N points inorder from the beginning
     """
+    # modify initpts keyword
+    modify_initpts(inputfile, N_primary, N_secondary)
+
     filepaths = [primary, secondary]
     N_pts = [N_primary, N_secondary]
     for i in range(2):
@@ -110,7 +128,6 @@ def main(inputfile, xdim,
             # write to input
             append_to_input(inputfile, data)
 
-        
 
 
 if __name__=='__main__':
