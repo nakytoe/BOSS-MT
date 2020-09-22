@@ -30,6 +30,7 @@ def read_bossout(path, filename, expname):
     filename: str, name of boss output file (boss.out)
     expname: str, descriptive name of the experiment
     """
+    print(f'{path} {filename} {expname}')
     path = os.path.expanduser(path)
     ret = {'name':expname,
             'initpts':None,

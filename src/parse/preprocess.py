@@ -77,13 +77,31 @@ def calculate_B(data):
             B = W.dot(W.T) + Kappa
             data['B'].append([b for b in B.flatten()])
 
-
-def preprocess(data, tolerance_levels = [0]):
+def add_inittimes(data, initmeantimes):
     """
+    per each initialization data point, add approximation 
+    of the expected acquisition time from that source to total time
+    """
+    N_initpts = sum(data['initpts'])
+    inittime_sum = 0
+    for i in range(N_initpts):
+        task = data['xy'][i][data['dim']] # which simulator was used
+        inittime = initmeantimes[int(task)]
+        data['totaltime'][i] += inittime
+        inittime_sum += inittime
+    for i in range(N_initpts, len(data['totaltime'])):
+        data['totaltime'][i] += inittime_sum
+
+def preprocess(data, tolerance_levels = [0], initmeantimes = None):
+    """
+    optionally add time taken for initialization data (acquisition time)
     calculate model time
     center and rescale output so that best acq of baseline is 0
     calculate convergence 
     """
+    if initmeantimes is not None:
+        add_inittimes(data, initmeantimes)
+
     data['modeltime'] = [itertime-acqtime for itertime, acqtime in zip(data['itertime'], data['acqtime'])]
     
     ### offset y

@@ -85,16 +85,19 @@ rule parse_and_preprocess:
             experiments = config['experiments']
             for folder in list(experiments.keys()):
                 truemin = []
+                initmeantimes = []
                 # read truemin values from baselines
                 for baseline_folder in experiments[folder]:
                     baseline_file = PARSED_DICT[baseline_folder][0]
                     data = rw.load_json(f'processed_data/{baseline_folder}/',f'{baseline_file}.json')
                     truemin.append(data['truemin'][0])
+                    mean_acqtimes = np.mean(data['acqtime'][1:]) # for approximating computational cost for initialization data
+                    initmeantimes.append(mean_acqtimes)
                 # save truemin values to experiments
                 for filename in PARSED_DICT[folder]:
                     data = rw.load_json(f'processed_data/{folder}/',f'{filename}.json')
                     data['truemin'] = truemin
-                    data = preprocess.preprocess(data, tolerances)
+                    data = preprocess.preprocess(data, tolerances, initmeantimes = initmeantimes)
                     rw.save_json(data, f'processed_data/{folder}/',f'{filename}.json')
             
 rule sumstat:
