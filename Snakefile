@@ -85,19 +85,48 @@ rule parse_and_preprocess:
             experiments = config['experiments']
             for folder in list(experiments.keys()):
                 truemin = []
-                initmeantimes = []
+                # number of experiments
+                N_exp = len(PARSED_DICT[folder])
+                baseline_plustimes = [] # table of additional times per source
                 # read truemin values from baselines
-                for baseline_folder in experiments[folder]:
+                for i in range(len(experiments[folder])):
+                    baseline_plustime = []
+                    baseline_folder = experiments[folder][i][0]
+                    initstrategy = experiments[folder][i][1]
                     baseline_file = PARSED_DICT[baseline_folder][0]
                     data = rw.load_json(f'processed_data/{baseline_folder}/',f'{baseline_file}.json')
                     truemin.append(data['truemin'][0])
-                    mean_acqtimes = np.mean(data['acqtime'][1:]) # for approximating computational cost for initialization data
-                    initmeantimes.append(mean_acqtimes)
+                    # for approximating computational cost for initialization data
+                    if initstrategy == 'self': # total time is true computational cost
+                        baseline_plustime = None
+                    elif initstrategy == 'random': # there is no heavy process for selecting secondary data, only the cost of acquisitions
+                        for baseline_file in PARSED_DICT[baseline_folder]:
+                            data = rw.load_json(f'processed_data/{baseline_folder}/',f'{baseline_file}.json')
+                            plustime = data['acqtime'].copy()
+                            for i in range(len(data['acqtime'])):
+                                plustime[i] += sum(np.array(data['acqtime'])[:i]) # cumulative cost
+                            baseline_plustime.append(plustime)
+                    elif initstrategy == 'inorder': # in addition to acquisition cost, there is cost of BO of the initalization data
+                        for baseline_file in PARSED_DICT[baseline_folder]:
+                            data = rw.load_json(f'processed_data/{baseline_folder}/',f'{baseline_file}.json')
+                            baseline_plustime.append(data['totaltime'].copy())
+                    else:
+                        raise ValueError("unknown initstrategy")
+                    baseline_plustimes.append(baseline_plustime)
                 # save truemin values to experiments
-                for filename in PARSED_DICT[folder]:
+
+                for i in range(len(PARSED_DICT[folder])):
+                    initial_data_cost = []
+                    for baseline_plustime in baseline_plustimes:
+                        if baseline_plustime is None:
+                            initial_data_cost.append(None)
+                        else:
+                            N_baselines = len(baseline_plustime)
+                            initial_data_cost.append(baseline_plustime[(i % N_baselines)])
+                    filename = PARSED_DICT[folder][i]
                     data = rw.load_json(f'processed_data/{folder}/',f'{filename}.json')
                     data['truemin'] = truemin
-                    data = preprocess.preprocess(data, tolerances, initmeantimes = initmeantimes)
+                    data = preprocess.preprocess(data, tolerances, initial_data_cost)
                     rw.save_json(data, f'processed_data/{folder}/',f'{filename}.json')
             
 rule sumstat:

@@ -77,32 +77,42 @@ def calculate_B(data):
             B = W.dot(W.T) + Kappa
             data['B'].append([b for b in B.flatten()])
 
-def add_inittimes(data, initmeantimes):
+def add_inittimes(data, initial_data_cost):
     """
-    per each initialization data point, add approximation 
-    of the expected acquisition time from that source to total time
+    Add computational cost from initialization data
     """
-    N_initpts = sum(data['initpts'])
-    inittime_sum = 0
-    for i in range(N_initpts):
-        task = data['xy'][i][data['dim']] # which simulator was used
-        inittime = initmeantimes[int(task)]
-        data['totaltime'][i] += inittime
-        inittime_sum += inittime
-    for i in range(N_initpts, len(data['totaltime'])):
-        data['totaltime'][i] += inittime_sum
+    accounted_initpts = 0
+    for cost, initpts in zip(initial_data_cost, data['initpts']):
+        if cost is None: # if initialization has been through active acquisition
+            pass
+        else: # if initialization data has been taken from a baseline
+            begin = accounted_initpts
+            if accounted_initpts != 0:
+                begin -= 1
+            end = begin + initpts
+            for i in range(begin, end):
+                data['totaltime'][i] += cost[i-begin]
+            for i in range(end, len(data['totaltime'])):
+                data['totaltime'][i] += cost[initpts-1]
+            
+        accounted_initpts += initpts
 
-def preprocess(data, tolerance_levels = [0], initmeantimes = None):
+
+def preprocess(data, tolerance_levels = [0], initial_data_cost = None):
     """
     optionally add time taken for initialization data (acquisition time)
     calculate model time
     center and rescale output so that best acq of baseline is 0
     calculate convergence 
     """
-    if initmeantimes is not None:
-        add_inittimes(data, initmeantimes)
 
     data['modeltime'] = [itertime-acqtime for itertime, acqtime in zip(data['itertime'], data['acqtime'])]
+
+    # add possible exra cost for initialization data
+    if initial_data_cost is not None:
+        add_inittimes(data, initial_data_cost)
+
+    
     
     ### offset y
     y_offset(data)
