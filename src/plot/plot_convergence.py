@@ -10,8 +10,20 @@ def plot_convergence_iter_time_distraction(folders, filename):
     convergence level
     """
     N = len(folders)
-    fig, axs = plt.subplots(N,3, figsize = (15,3*N),
-                           sharey = 'all', sharex = 'col')
+    fig, axs = plt.subplots(N,3, figsize = (15,4*N),
+                           sharey = 'all', sharex = 'col',
+                           constrained_layout = True)
+    SMALL_SIZE = 15
+    MEDIUM_SIZE = 20
+    LARGE_SIZE = 30
+
+    plt.rc('font', size=SMALL_SIZE)          # controls default text sizes
+    plt.rc('axes', titlesize=LARGE_SIZE)     # fontsize of the axes title
+    plt.rc('axes', labelsize=MEDIUM_SIZE)    # fontsize of the x and y labels
+    plt.rc('xtick', labelsize=MEDIUM_SIZE)    # fontsize of the tick labels
+    plt.rc('ytick', labelsize=MEDIUM_SIZE)    # fontsize of the tick labels
+    plt.rc('legend', fontsize=MEDIUM_SIZE)    # legend fontsize
+    plt.rc('figure', titlesize=LARGE_SIZE)  # fontsize of the figure title
     for i in range(N):
         
         ### BO iteration
@@ -42,10 +54,11 @@ def plot_convergence_iter_time_distraction(folders, filename):
 
         tolerances_lists = np.array(tolerances_lists, dtype = float)
         tolerances_mean = np.nanmean(tolerances_lists, axis = 0)
-        ax.plot(times_mean, tolerances_mean, 'r', label = 'mean')
+        ax.plot(times_mean, tolerances_mean, color = 'red',
+             marker = 's', label = 'mean')
 
         ax.set_xlabel('BO iteration')
-        ax.set_ylabel('GMP convergence (kcal/mol)')
+        ax.set_ylabel('GMP conv. (kcal/mol)')
         ax.set_yscale('log')
         if i == 0:
             ax.legend()
@@ -77,9 +90,9 @@ def plot_convergence_iter_time_distraction(folders, filename):
 
         tolerances_lists = np.array(tolerances_lists, dtype = float)
         tolerances_mean = np.nanmean(tolerances_lists, axis = 0)
-        ax.plot(times_mean, tolerances_mean, 'r', label = 'mean')
+        ax.plot(times_mean, tolerances_mean, 'r', marker = 's', label = 'mean')
         ax.set_xlabel('1 core CPU time (s)')
-        ax.set_ylabel('GMP convergence (kcal/mol)')
+        ax.set_ylabel('GMP conv. (kcal/mol)')
         ax.set_yscale('log')
         if i == 0:
             ax.legend()
@@ -114,14 +127,17 @@ def plot_convergence_iter_time_distraction(folders, filename):
                 height = tolerances_mean*0.5, align='center',
                color = 'grey')
         ax.set_xlabel('distraction rate')
-        ax.set_ylabel('GMP convergence (kcal/mol)')
+        ax.set_ylabel('GMP conv. (kcal/mol)')
         ax.set_yscale('log')
+        
 
     for ax in axs.flatten():
         ax.spines['right'].set_visible(False)
         ax.spines['top'].set_visible(False)
         ax.spines['left'].set_visible(False)
         ax.spines['bottom'].set_visible(False)
+        ax.tick_params(axis = 'both',
+              width = 3, length = 4)
         ax.set_ylim(0.0005, 10)
 
 
