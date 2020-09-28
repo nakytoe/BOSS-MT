@@ -3,6 +3,18 @@ import matplotlib.pyplot as plt
 import json
 import sys
 
+SMALL_SIZE = 15
+MEDIUM_SIZE = 20
+LARGE_SIZE = 30
+
+plt.rc('font', size=SMALL_SIZE)          # controls default text sizes
+plt.rc('axes', titlesize=LARGE_SIZE)     # fontsize of the axes title
+plt.rc('axes', labelsize=MEDIUM_SIZE)    # fontsize of the x and y labels
+plt.rc('xtick', labelsize=MEDIUM_SIZE)    # fontsize of the tick labels
+plt.rc('ytick', labelsize=MEDIUM_SIZE)    # fontsize of the tick labels
+plt.rc('legend', fontsize=MEDIUM_SIZE)    # legend fontsize
+plt.rc('figure', titlesize=LARGE_SIZE)  # fontsize of the figure title
+
 def load_data(filepath):
     with open(filepath,'r') as f:
         data = json.load(f)
@@ -40,33 +52,42 @@ a1a2 = load_folder('processed_data/a1a2', 'exp', 30)
 
 fig, axs = plt.subplots(1,2,
                         figsize = (10,5),
-                       sharey = 'all', sharex = 'all')
-
+                       sharey = 'all', sharex = 'all',
+                       constrained_layout = True)
+plt.rc('font', size=SMALL_SIZE)          # controls default text sizes
+plt.rc('axes', titlesize=LARGE_SIZE)     # fontsize of the axes title
+plt.rc('axes', labelsize=MEDIUM_SIZE)    # fontsize of the x and y labels
+plt.rc('xtick', labelsize=MEDIUM_SIZE)    # fontsize of the tick labels
+plt.rc('ytick', labelsize=MEDIUM_SIZE)    # fontsize of the tick labels
+plt.rc('legend', fontsize=MEDIUM_SIZE)    # legend fontsize
+plt.rc('figure', titlesize=LARGE_SIZE)  # fontsize of the figure title
 folders = [a1a2, a1a3]
-inittypes = ['identical sobol initialization', 'random (uniform) initialization'] 
+inittypes = ['', ''] 
 for i in range(2):
     # kappa
     ax = axs[i]
     m, sd, least, most = experiments_mean_sd(folders[i],
                             'GP_hyperparam', 2)
     x = np.arange(1, len(m)+1)
-    ax.plot(x,m, color = 'black', label = 'mean')
+    ax.plot(x,m, color = 'black', label = 'mean', linewidth = 3)
     ax.plot(x,m+sd, color = 'blue',
-            linestyle = 'dashed', label = 'sd')
+            linestyle = 'dashed', label = 'sd', linewidth = 3)
     if np.all(least <= m -sd): # when kappa encodes variance
         ax.plot(x,m-sd, color = 'blue', 
-            linestyle = 'dashed')
+            linestyle = 'dashed', linewidth = 3)
     ax.plot(x,most, color = 'grey',
-            linestyle = 'dotted', label = 'range')
-    ax.plot(x,least, color = 'grey', linestyle = 'dotted')
+            linestyle = 'dotted', label = 'range', linewidth = 3)
+    ax.plot(x,least, color = 'grey', linestyle = 'dotted', linewidth = 3)
     title = folders[i][0]['name'].split('_')[0]
-    ax.set_title(f'{1+i}) {title}: {inittypes[i]}', loc = 'left')
+    ax.set_title(f'{1+i}) {title} {inittypes[i]}', loc = 'left')
     ax.set_ylabel('variance')
     ax.set_xlabel('BO iteration')
     ax.spines['right'].set_visible(False)
     ax.spines['top'].set_visible(False)
     ax.spines['left'].set_visible(False)
     ax.spines['bottom'].set_visible(False)
+    ax.tick_params(axis = 'both',
+              width = 3, length = 4)
     ax.legend()
 
 plt.savefig('results/figures/random_sobol_init_variance_variability.pdf')
@@ -84,9 +105,16 @@ a2a3 = load_folder('processed_data/a2a3', 'exp', 30)
 a2a4 = load_folder('processed_data/a2a4', 'exp', 30)
 
 fig, axs = plt.subplots(5,3,
-                        figsize = (15,15),
-                       sharey = 'all', sharex = 'all')
-
+                        figsize = (5*5,5*4),
+                       sharey = 'all', sharex = 'all',
+                       constrained_layout = True)
+plt.rc('font', size=SMALL_SIZE)          # controls default text sizes
+plt.rc('axes', titlesize=LARGE_SIZE)     # fontsize of the axes title
+plt.rc('axes', labelsize=MEDIUM_SIZE)    # fontsize of the x and y labels
+plt.rc('xtick', labelsize=MEDIUM_SIZE)    # fontsize of the tick labels
+plt.rc('ytick', labelsize=MEDIUM_SIZE)    # fontsize of the tick labels
+plt.rc('legend', fontsize=MEDIUM_SIZE)    # legend fontsize
+plt.rc('figure', titlesize=LARGE_SIZE)  # fontsize of the figure title
 folders = [a1a3, a2a1, a2a2, a2a3, a2a4]
 
 # plot 1st row without kappa and B (baseline)
@@ -100,14 +128,14 @@ if True:
                                 'GP_hyperparam', 2,
                                 use_abs = True)
     x = np.arange(1, len(m)+1)
-    ax.plot(x,m, color = 'black', label = 'mean')
+    ax.plot(x,m, color = 'black', label = 'mean', linewidth = 3)
     ax.plot(x,m+sd, color = 'blue',
-            linestyle = 'dashed', label = 'sd')
+            linestyle = 'dashed', label = 'sd', linewidth = 3)
     ax.plot(x,m-sd, color = 'blue', 
-            linestyle = 'dashed')
+            linestyle = 'dashed', linewidth = 3)
     ax.plot(x,most, color = 'grey',
-            linestyle = 'dotted', label = 'range')
-    ax.plot(x,least, color = 'grey', linestyle = 'dotted')
+            linestyle = 'dotted', label = 'range', linewidth = 3)
+    ax.plot(x,least, color = 'grey', linestyle = 'dotted', linewidth = 3)
     title = folders[i][0]['name'].split('_')[0]
     ax.set_title(f'{i+1}c) {title}', loc = 'left')
     ax.set_ylabel('variance')
@@ -116,6 +144,8 @@ if True:
     ax.spines['top'].set_visible(False)
     ax.spines['left'].set_visible(False)
     ax.spines['bottom'].set_visible(False)
+    ax.tick_params(axis = 'both',
+              width = 3, length = 4)
     ax.legend()
 
 # plot rest of the experiments
@@ -125,15 +155,15 @@ for i in range(1,5):
     m, sd, least, most = experiments_mean_sd(folders[i],
                             'GP_hyperparam', 3)
     x = np.arange(1, len(m)+1)
-    ax.plot(x,m, color = 'black', label = 'mean')
+    ax.plot(x,m, color = 'black', label = 'mean', linewidth = 3)
     ax.plot(x,m+sd, color = 'blue',
-            linestyle = 'dashed', label = 'sd')
+            linestyle = 'dashed', label = 'sd', linewidth = 3)
     if np.all(least <= m -sd): # when kappa encodes variance
         ax.plot(x,m-sd, color = 'blue', 
-            linestyle = 'dashed')
+            linestyle = 'dashed', linewidth = 3)
     ax.plot(x,most, color = 'grey',
-            linestyle = 'dotted', label = 'range')
-    ax.plot(x,least, color = 'grey', linestyle = 'dotted')
+            linestyle = 'dotted', label = 'range', linewidth = 3)
+    ax.plot(x,least, color = 'grey', linestyle = 'dotted', linewidth = 3)
     title = folders[i][0]['name'].split('_')[0]
     ax.set_title(f'{1+i}a) {title}', loc = 'left')
     ax.set_ylabel('kappa')
@@ -142,6 +172,8 @@ for i in range(1,5):
     ax.spines['top'].set_visible(False)
     ax.spines['left'].set_visible(False)
     ax.spines['bottom'].set_visible(False)
+    ax.tick_params(axis = 'both',
+              width = 3, length = 4)
     ax.legend()
     
     # W
@@ -150,14 +182,14 @@ for i in range(1,5):
                                 'GP_hyperparam', 2,
                                 use_abs = True)
     x = np.arange(1, len(m)+1)
-    ax.plot(x,m, color = 'black', label = 'mean')
+    ax.plot(x,m, color = 'black', label = 'mean', linewidth = 3)
     ax.plot(x,m+sd, color = 'blue',
-            linestyle = 'dashed', label = 'sd')
+            linestyle = 'dashed', label = 'sd', linewidth = 3)
     ax.plot(x,m-sd, color = 'blue', 
-            linestyle = 'dashed')
+            linestyle = 'dashed', linewidth = 3)
     ax.plot(x,most, color = 'grey',
-            linestyle = 'dotted', label = 'range')
-    ax.plot(x,least, color = 'grey', linestyle = 'dotted')
+            linestyle = 'dotted', label = 'range', linewidth = 3)
+    ax.plot(x,least, color = 'grey', linestyle = 'dotted', linewidth = 3)
     title = folders[i][0]['name'].split('_')[0]
     ax.set_title(f'{1+i}b) {title}', loc = 'left')
     ax.set_ylabel('|w|')
@@ -166,6 +198,8 @@ for i in range(1,5):
     ax.spines['top'].set_visible(False)
     ax.spines['left'].set_visible(False)
     ax.spines['bottom'].set_visible(False)
+    ax.tick_params(axis = 'both',
+              width = 3, length = 4)
     ax.legend()
     
     # autocovariance
@@ -174,14 +208,14 @@ for i in range(1,5):
                                 'B', 0,
                                 use_abs = True)
     x = np.arange(1, len(m)+1)
-    ax.plot(x,m, color = 'black', label = 'mean')
+    ax.plot(x,m, color = 'black', label = 'mean', linewidth = 3)
     ax.plot(x,m+sd, color = 'blue',
-            linestyle = 'dashed', label = 'sd')
+            linestyle = 'dashed', label = 'sd', linewidth = 3)
     ax.plot(x,m-sd, color = 'blue', 
-            linestyle = 'dashed')
+            linestyle = 'dashed', linewidth = 3)
     ax.plot(x,most, color = 'grey',
-            linestyle = 'dotted', label = 'range')
-    ax.plot(x,least, color = 'grey', linestyle = 'dotted')
+            linestyle = 'dotted', label = 'range', linewidth = 3)
+    ax.plot(x,least, color = 'grey', linestyle = 'dotted', linewidth = 3)
     title = folders[i][0]['name'].split('_')[0]
     ax.set_title(f'{1+i}c) {title}', loc = 'left')
     ax.set_ylabel('autocovariance')
@@ -190,6 +224,8 @@ for i in range(1,5):
     ax.spines['top'].set_visible(False)
     ax.spines['left'].set_visible(False)
     ax.spines['bottom'].set_visible(False)
+    ax.tick_params(axis = 'both',
+              width = 3, length = 4)
     ax.legend()
 
     plt.savefig('results/figures/prior_heuristic_results_1_task.pdf')
@@ -207,9 +243,16 @@ a3b5 = load_folder('processed_data/a3b5', 'exp', 30)
 a1b2 = load_folder('processed_data/a1b2', 'exp', 30)
 
 fig, axs = plt.subplots(6,3,
-                        figsize = (15,18),
-                       sharey = 'all', sharex = 'all')
-
+                        figsize = (5*5,6*5),
+                       sharey = 'all', sharex = 'all',
+                       constrained_layout = True)
+plt.rc('font', size=SMALL_SIZE)          # controls default text sizes
+plt.rc('axes', titlesize=LARGE_SIZE)     # fontsize of the axes title
+plt.rc('axes', labelsize=MEDIUM_SIZE)    # fontsize of the x and y labels
+plt.rc('xtick', labelsize=MEDIUM_SIZE)    # fontsize of the tick labels
+plt.rc('ytick', labelsize=MEDIUM_SIZE)    # fontsize of the tick labels
+plt.rc('legend', fontsize=MEDIUM_SIZE)    # legend fontsize
+plt.rc('figure', titlesize=LARGE_SIZE)  # fontsize of the figure title
 folders = [a1b2, None, a1a3, a3b1, a3b2, a3b3, a3b4, a3b5]
 
 ### baselines
@@ -220,14 +263,14 @@ for ax, i, enum in zip(axs[0,:], range(3), ['a','b', 'c']):
         m, sd, least, most = experiments_mean_sd(folders[i],
                                 'GP_hyperparam', 2)
         x = np.arange(1, len(m)+1)
-        ax.plot(x,m, color = 'black', label = 'mean')
+        ax.plot(x,m, color = 'black', label = 'mean', linewidth = 3)
         ax.plot(x,m+sd, color = 'blue',
-                linestyle = 'dashed', label = 'sd')
+                linestyle = 'dashed', label = 'sd', linewidth = 3)
         ax.plot(x,m-sd, color = 'blue', 
-                linestyle = 'dashed')
+                linestyle = 'dashed', linewidth = 3)
         ax.plot(x,most, color = 'grey',
-                linestyle = 'dotted', label = 'range')
-        ax.plot(x,least, color = 'grey', linestyle = 'dotted')
+                linestyle = 'dotted', label = 'range', linewidth = 3)
+        ax.plot(x,least, color = 'grey', linestyle = 'dotted', linewidth = 3)
         title = folders[i][0]['name'].split('_')[0]
         ax.set_title(f'1{enum}) {title}', loc = 'left')
         ax.set_ylabel('variance')
@@ -236,6 +279,8 @@ for ax, i, enum in zip(axs[0,:], range(3), ['a','b', 'c']):
         ax.spines['top'].set_visible(False)
         ax.spines['left'].set_visible(False)
         ax.spines['bottom'].set_visible(False)
+        ax.tick_params(axis = 'both',
+              width = 3, length = 4)
         ax.legend()
 
 ### TL experiments
@@ -246,14 +291,14 @@ for i in range(3,8):
     m, sd, least, most = experiments_mean_sd(folders[i],
                             'B', 0)
     x = np.arange(1, len(m)+1)
-    ax.plot(x,m, color = 'black', label = 'mean')
+    ax.plot(x,m, color = 'black', label = 'mean', linewidth = 3)
     ax.plot(x,m+sd, color = 'blue',
-            linestyle = 'dashed', label = 'sd')
+            linestyle = 'dashed', label = 'sd', linewidth = 3)
     ax.plot(x,m-sd, color = 'blue', 
-            linestyle = 'dashed')
+            linestyle = 'dashed', linewidth = 3)
     ax.plot(x,most, color = 'grey',
-            linestyle = 'dotted', label = 'range')
-    ax.plot(x,least, color = 'grey', linestyle = 'dotted')
+            linestyle = 'dotted', label = 'range', linewidth = 3)
+    ax.plot(x,least, color = 'grey', linestyle = 'dotted', linewidth = 3)
     title = folders[i][0]['name'].split('_')[0]
     ax.set_title(f'{i-1}a) {title}', loc = 'left')
     ax.set_ylabel('HF autocovariance')
@@ -262,6 +307,8 @@ for i in range(3,8):
     ax.spines['top'].set_visible(False)
     ax.spines['left'].set_visible(False)
     ax.spines['bottom'].set_visible(False)
+    ax.tick_params(axis = 'both',
+              width = 3, length = 4)
     ax.legend()
     
     # W
@@ -270,14 +317,14 @@ for i in range(3,8):
                                 'B', 1,
                                 use_abs = True)
     x = np.arange(1, len(m)+1)
-    ax.plot(x,m, color = 'black', label = 'mean')
+    ax.plot(x,m, color = 'black', label = 'mean', linewidth = 3)
     ax.plot(x,m+sd, color = 'blue',
-            linestyle = 'dashed', label = 'sd')
+            linestyle = 'dashed', label = 'sd', linewidth = 3)
     ax.plot(x,m-sd, color = 'blue', 
-            linestyle = 'dashed')
+            linestyle = 'dashed', linewidth = 3)
     ax.plot(x,most, color = 'grey',
-            linestyle = 'dotted', label = 'range')
-    ax.plot(x,least, color = 'grey', linestyle = 'dotted')
+            linestyle = 'dotted', label = 'range', linewidth = 3)
+    ax.plot(x,least, color = 'grey', linestyle = 'dotted', linewidth = 3)
     title = folders[i][0]['name'].split('_')[0]
     ax.set_title(f'{i-1}b) {title}', loc = 'left')
     ax.set_ylabel('cross covariance')
@@ -286,6 +333,8 @@ for i in range(3,8):
     ax.spines['top'].set_visible(False)
     ax.spines['left'].set_visible(False)
     ax.spines['bottom'].set_visible(False)
+    ax.tick_params(axis = 'both',
+              width = 3, length = 4)
     ax.legend()
     
     # b
@@ -294,14 +343,14 @@ for i in range(3,8):
                                 'B', 3,
                                 use_abs = True)
     x = np.arange(1, len(m)+1)
-    ax.plot(x,m, color = 'black', label = 'mean')
+    ax.plot(x,m, color = 'black', label = 'mean', linewidth = 3)
     ax.plot(x,m+sd, color = 'blue',
-            linestyle = 'dashed', label = 'sd')
+            linestyle = 'dashed', label = 'sd', linewidth = 3)
     ax.plot(x,m-sd, color = 'blue', 
-            linestyle = 'dashed')
+            linestyle = 'dashed', linewidth = 3)
     ax.plot(x,most, color = 'grey',
-            linestyle = 'dotted', label = 'range')
-    ax.plot(x,least, color = 'grey', linestyle = 'dotted')
+            linestyle = 'dotted', label = 'range', linewidth = 3)
+    ax.plot(x,least, color = 'grey', linestyle = 'dotted', linewidth = 3)
     title = folders[i][0]['name'].split('_')[0]
     ax.set_title(f'{i-1}c) {title}', loc = 'left')
     ax.set_ylabel('LF autocovariance')
@@ -310,6 +359,8 @@ for i in range(3,8):
     ax.spines['top'].set_visible(False)
     ax.spines['left'].set_visible(False)
     ax.spines['bottom'].set_visible(False)
+    ax.tick_params(axis = 'both',
+              width = 3, length = 4)
     ax.legend()
     
     plt.savefig('results/figures/prior_heuristic_results_2_task.pdf')
