@@ -154,3 +154,58 @@ def plot_y_scatter_trellis(explist, figname):
     axs[0,N-1].set_yticklabels([])    
 
     plt.savefig(figname)
+
+def timings_plot_table(figname, folders):
+    """
+    Plot mean acquisition times for different simulators based on sobol experiments
+    return table of timing ratios
+    """
+    font = {'size'   : 22}
+    plt.rc('font', **font)
+
+    fig, axs = plt.subplots(1, figsize = (5,5),
+                    constrained_layout = True)
+    names = ['LF', 'HF', 'VHF']
+    ax = axs
+
+    ax.tick_params(axis = 'both',
+                length = 0)
+    ### plot mean acquisition times
+    ratios = []
+    for i in range(3):
+        exp = folders[i][0]
+        acq_mean = np.mean(exp['acqtime'])
+        ax.bar(i,  acq_mean, color = 'blue')
+        ax.annotate(f'{round(acq_mean, 2)}', [i-0.3,acq_mean+1])
+        ratio = []
+        for j in range(3):
+            ratio.append(acq_mean/np.mean(folders[j][0]['acqtime']))
+        ratios.append(ratio)
+    for tick in ax.get_yticks()[1:-1]:
+        ax.axhline(tick, color = 'white', linewidth = 5)
+    ax.spines['bottom'].set_visible(False)
+    ax.spines['left'].set_visible(False)
+    ax.spines['right'].set_visible(False)
+    ax.spines['top'].set_visible(False)
+    ax.set_xticks(range(3))
+    ax.set_xticklabels(names)
+    ax.set_xlabel('simulation fidelity')
+    ax.set_ylabel('mean acq. time [s]')
+
+    plt.savefig(figname)
+
+    ## print acquisition time ratios to table
+    lines = []
+    line = ''
+    for fidelity in names:
+        line = f'{line} & {fidelity}'
+    line = f'{line} \\\\'
+    lines.append(line)
+    for i in range(3):
+        line = f'{names[i]}'
+        for ratio in ratios[i]:
+            line = f'{line} & {round(ratio, 2)}'
+        line = f'{line} \\\\'
+        lines.append(line)
+
+    return lines
