@@ -46,13 +46,6 @@ def plot_TL_convergence(filename, experiment_folders, baseline_folders):
     MEDIUM_SIZE = 20
     LARGE_SIZE = 25
 
-    plt.rc('font', size=SMALL_SIZE)          # controls default text sizes
-    plt.rc('axes', titlesize=LARGE_SIZE)     # fontsize of the axes title
-    plt.rc('axes', labelsize=SMALL_SIZE)    # fontsize of the x and y labels
-    plt.rc('xtick', labelsize=SMALL_SIZE)    # fontsize of the tick labels
-    plt.rc('ytick', labelsize=MEDIUM_SIZE)    # fontsize of the tick labels
-    plt.rc('legend', fontsize=SMALL_SIZE)    # legend fontsize
-
     for i in range(N):
         experiment = experiment_folders[i].copy()
         baseline = baseline_folders[i].copy()
@@ -107,7 +100,7 @@ def plot_TL_convergence(filename, experiment_folders, baseline_folders):
                                  color = 'red', marker = 's',
                                 label = 'mean')
                 mean_labelled = True
-        axs[0,i].legend()
+        axs[0,i].legend(fontsize = SMALL_SIZE)
 
         ###
         convergence_times = np.array(convergence_times, dtype = float)
@@ -163,7 +156,8 @@ def plot_TL_convergence(filename, experiment_folders, baseline_folders):
                             label = 'outlier')
                 outlier_labelled = True
             axs[1,i].annotate('{:.0f}'.format(outlier[1]), 
-                              [outlier[0],cputime_max*1.1], rotation = 270)
+                              [outlier[0],cputime_max*1.1], rotation = 270,
+                              fontsize = SMALL_SIZE)
         mean_labelled = False
         for initpts in np.unique(x_train):
             mean = np.mean(y_train[x_train == initpts])
@@ -174,23 +168,23 @@ def plot_TL_convergence(filename, experiment_folders, baseline_folders):
                                  color = 'red', marker = 's',
                                 label = 'mean')
                 mean_labelled = True
-        axs[1,i].legend()
+        axs[1,i].legend(fontsize = SMALL_SIZE)
 
         expname = experiment_folders[i][0]['name'].split('_')[0]
         title = f'{i+1}a) {expname}'
-        axs[0,i].set_title(title, loc = 'left')
+        axs[0,i].set_title(title, loc = 'left', fontsize = LARGE_SIZE)
         title = f'{i+1}b) {expname}'
-        axs[1,i].set_title(title, loc = 'left')
+        axs[1,i].set_title(title, loc = 'left', fontsize = LARGE_SIZE)
 
 
 
-    axs[0,0].set_ylabel('BO iterations to GMP convergence')
-    axs[1,0].set_ylabel('CPU time to GMP convergence')
+    axs[0,0].set_ylabel('BO iterations to GMP convergence', fontsize = SMALL_SIZE)
+    axs[1,0].set_ylabel('CPU time to GMP convergence', fontsize = SMALL_SIZE)
 
     axs[1,0].set_ylim(-0.05*cputime_max,1.4*cputime_max)
 
     for ax in axs[1,:]:
-        ax.set_xlabel('secondary initpts')
+        ax.set_xlabel('secondary initpts', fontsize = SMALL_SIZE)
 
     for ax in axs.flatten():
         ax.spines['bottom'].set_visible(False)
@@ -199,7 +193,8 @@ def plot_TL_convergence(filename, experiment_folders, baseline_folders):
         ax.spines['top'].set_visible(False)
         ax.tick_params('x',labelrotation = 40)
         ax.tick_params(axis = 'both',
-              width = 3, length = 4)
+              width = 3, length = 4,
+              labelsize = SMALL_SIZE)
 
     plt.savefig(filename)
     

@@ -13,8 +13,8 @@ def plot_convergence_iter_time_distraction(folders, filename):
     fig, axs = plt.subplots(N,3, figsize = (15,4*N),
                            sharey = 'all', sharex = 'col',
                            constrained_layout = True)
-    SMALL_SIZE = 15
-    MEDIUM_SIZE = 20
+    SMALL_SIZE = 20
+    MEDIUM_SIZE = 22
     LARGE_SIZE = 30
 
     plt.rc('font', size=SMALL_SIZE)          # controls default text sizes
