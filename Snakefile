@@ -5,8 +5,10 @@ import src.parse.parse_BOSS_output as parse
 import src.parse.preprocess as preprocess
 import src.analyse.sumstat as sumstat
 import src.plot.plot_convergence as plot_convergence
-
+import src.plot.plot_TL_results as plot_TL_results
 import os
+import matplotlib.pyplot as plt
+
 
 # define all inputs and outputs
 
@@ -140,7 +142,10 @@ rule sumstat:
         'results/tables/covariance_alanine2D.tex',
         'results/tables/covariance_alanine4D.tex',
         'results/figures/scatter_trellis_alanine2D.pdf',
-        'results/figures/scatter_trellis_alanine4D.pdf'
+        'results/figures/scatter_trellis_alanine4D.pdf',
+        'results/figures/mean_acquisition_times.pdf',
+        'results/tables/acquisition_time_ratios.tex',
+        'results/figures/TL_initialization_strategies.pdf'
     run:
         config = rw.load_yaml('src/config/analysis/', 'sumstat.yaml')
         # calculate summary statistics for sobol experiments
@@ -173,7 +178,26 @@ rule sumstat:
             rw.write_table_tex(corr_matrix, f'results/tables/correlation_{saveto}.tex', colnames = names, rownames = names)
             # plot scatter trellis, to verify that pearsons is a valid measure of correlation
             sumstat.plot_y_scatter_trellis(explist, f'results/figures/scatter_trellis_{saveto}.pdf')
+        
+        # plot mean acquisition times
+        folders = []
+        for expname in config['timings']:
+            filename = PARSED_DICT[expname][0]
+            data = rw.load_json(f'processed_data/{expname}/',f'{filename}.json')
+            folders.append([data])
+        timing_ratios = sumstat.timings_plot_table('results/figures/mean_acquisition_times.pdf', folders)
+        # make table of acquisition time ratios
+        with open('results/tables/acquisition_time_ratios.tex', 'w') as f:
+            f.writelines(timing_ratios)
 
+        # compare TL sampling strategies
+        folders = []
+        for expname in config['sampling_strategies']:
+            #filename = PARSED_DICT[expname][0]
+            data = rw.load_json(f'processed_data/{expname}/',f'exp_1.json')
+            folders.append([data])
+        sumstat.plot_TL_initialization_strategies('results/figures/TL_initialization_strategies.pdf', folders)
+        
 
 rule prior_hypothesis:
     """
@@ -220,4 +244,35 @@ rule prior_selection_results:
                     folders.append(folder)
                 plot_convergence.plot_convergence_iter_time_distraction(folders, f'results/figures/{figurename}.pdf')
 
-
+rule plot_tl_results:
+    """
+    plot results for tl experiments
+    - convergence speed to 0.1 kcal/mol
+    """
+    input:
+        'src/config/plot/plot_TL_results.yaml',
+        expand('processed_data/{raw_name}.json',
+                raw_name = RAW_NAME)
+    output:
+        'results/figures/convergence_alanine2D_TL_random_init.pdf',
+        'results/figures/convergence_alanine2D_TL_BO_init.pdf',
+        'results/figures/convergence_alanine2D_TL_sobol_init.pdf',
+        'results/figures/convergence_alanine4D_TL_BO_init.pdf'
+    run:
+        # load plot configuration
+        def load_experiments(exp_name):
+            folder = []
+            for filename in PARSED_DICT[exp_name]:
+                data = rw.load_json(f'processed_data/{exp_name}/',f'{filename}.json')
+                folder.append(data)
+            return folder
+        config = rw.load_yaml('src/config/plot/','plot_TL_results.yaml') 
+        print(config)
+        for plotname in config['plotnames'].keys():
+            print(plotname)
+            # load experiments
+            experiments = [load_experiments(exp_name) for exp_name in config['plotnames'][plotname]['experiments']]
+            # load baselines
+            baselines = [load_experiments(exp_name) for exp_name in config['plotnames'][plotname]['baselines']]
+            # plot convergence
+            plot_TL_results.plot_TL_convergence(f'results/figures/convergence_{plotname}.pdf', experiments, baselines)
