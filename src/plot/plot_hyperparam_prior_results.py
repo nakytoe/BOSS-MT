@@ -7,13 +7,6 @@ SMALL_SIZE = 15
 MEDIUM_SIZE = 20
 LARGE_SIZE = 30
 
-plt.rc('font', size=SMALL_SIZE)          # controls default text sizes
-plt.rc('axes', titlesize=LARGE_SIZE)     # fontsize of the axes title
-plt.rc('axes', labelsize=MEDIUM_SIZE)    # fontsize of the x and y labels
-plt.rc('xtick', labelsize=MEDIUM_SIZE)    # fontsize of the tick labels
-plt.rc('ytick', labelsize=MEDIUM_SIZE)    # fontsize of the tick labels
-plt.rc('legend', fontsize=MEDIUM_SIZE)    # legend fontsize
-plt.rc('figure', titlesize=LARGE_SIZE)  # fontsize of the figure title
 
 def load_data(filepath):
     with open(filepath,'r') as f:
@@ -51,16 +44,9 @@ a1a3 = load_folder('processed_data/a1a3', 'exp', 30)
 a1a2 = load_folder('processed_data/a1a2', 'exp', 30)
 
 fig, axs = plt.subplots(1,2,
-                        figsize = (10,5),
+                        figsize = (10,4),
                        sharey = 'all', sharex = 'all',
                        constrained_layout = True)
-plt.rc('font', size=SMALL_SIZE)          # controls default text sizes
-plt.rc('axes', titlesize=LARGE_SIZE)     # fontsize of the axes title
-plt.rc('axes', labelsize=MEDIUM_SIZE)    # fontsize of the x and y labels
-plt.rc('xtick', labelsize=MEDIUM_SIZE)    # fontsize of the tick labels
-plt.rc('ytick', labelsize=MEDIUM_SIZE)    # fontsize of the tick labels
-plt.rc('legend', fontsize=MEDIUM_SIZE)    # legend fontsize
-plt.rc('figure', titlesize=LARGE_SIZE)  # fontsize of the figure title
 folders = [a1a2, a1a3]
 inittypes = ['', ''] 
 for i in range(2):
@@ -79,16 +65,16 @@ for i in range(2):
             linestyle = 'dotted', label = 'range', linewidth = 3)
     ax.plot(x,least, color = 'grey', linestyle = 'dotted', linewidth = 3)
     title = folders[i][0]['name'].split('_')[0]
-    ax.set_title(f'{1+i}) {title} {inittypes[i]}', loc = 'left')
-    ax.set_ylabel('variance')
-    ax.set_xlabel('BO iteration')
+    ax.set_title(f'{1+i}) {title} {inittypes[i]}', loc = 'left', fontsize = LARGE_SIZE)
+    ax.set_ylabel('variance', fontsize = MEDIUM_SIZE)
+    ax.set_xlabel('BO iteration', fontsize = MEDIUM_SIZE)
     ax.spines['right'].set_visible(False)
     ax.spines['top'].set_visible(False)
     ax.spines['left'].set_visible(False)
     ax.spines['bottom'].set_visible(False)
     ax.tick_params(axis = 'both',
-              width = 3, length = 4)
-    ax.legend()
+              width = 3, length = 4, labelsize = SMALL_SIZE)
+    ax.legend(fontsize = SMALL_SIZE)
 
 plt.savefig('results/figures/random_sobol_init_variance_variability.pdf')
 
@@ -105,16 +91,9 @@ a2a3 = load_folder('processed_data/a2a3', 'exp', 30)
 a2a4 = load_folder('processed_data/a2a4', 'exp', 30)
 
 fig, axs = plt.subplots(5,3,
-                        figsize = (5*5,5*4),
+                        figsize = (3*5,5*3),
                        sharey = 'all', sharex = 'all',
                        constrained_layout = True)
-plt.rc('font', size=SMALL_SIZE)          # controls default text sizes
-plt.rc('axes', titlesize=LARGE_SIZE)     # fontsize of the axes title
-plt.rc('axes', labelsize=MEDIUM_SIZE)    # fontsize of the x and y labels
-plt.rc('xtick', labelsize=MEDIUM_SIZE)    # fontsize of the tick labels
-plt.rc('ytick', labelsize=MEDIUM_SIZE)    # fontsize of the tick labels
-plt.rc('legend', fontsize=MEDIUM_SIZE)    # legend fontsize
-plt.rc('figure', titlesize=LARGE_SIZE)  # fontsize of the figure title
 folders = [a1a3, a2a1, a2a2, a2a3, a2a4]
 
 # plot 1st row without kappa and B (baseline)
@@ -137,16 +116,16 @@ if True:
             linestyle = 'dotted', label = 'range', linewidth = 3)
     ax.plot(x,least, color = 'grey', linestyle = 'dotted', linewidth = 3)
     title = folders[i][0]['name'].split('_')[0]
-    ax.set_title(f'{i+1}c) {title}', loc = 'left')
-    ax.set_ylabel('variance')
-    ax.set_xlabel('BO iteration')
+    ax.set_title(f'{i+1}c) {title}', loc = 'left', fontsize = LARGE_SIZE)
+    ax.set_ylabel('variance', fontsize = MEDIUM_SIZE)
+    ax.set_xlabel('BO iteration', fontsize = MEDIUM_SIZE)
     ax.spines['right'].set_visible(False)
     ax.spines['top'].set_visible(False)
     ax.spines['left'].set_visible(False)
     ax.spines['bottom'].set_visible(False)
     ax.tick_params(axis = 'both',
-              width = 3, length = 4)
-    ax.legend()
+              width = 3, length = 4, labelsize = SMALL_SIZE)
+    ax.legend(fontsize = SMALL_SIZE)
 
 # plot rest of the experiments
 for i in range(1,5):
@@ -165,16 +144,16 @@ for i in range(1,5):
             linestyle = 'dotted', label = 'range', linewidth = 3)
     ax.plot(x,least, color = 'grey', linestyle = 'dotted', linewidth = 3)
     title = folders[i][0]['name'].split('_')[0]
-    ax.set_title(f'{1+i}a) {title}', loc = 'left')
-    ax.set_ylabel('kappa')
-    ax.set_xlabel('BO iteration')
+    ax.set_title(f'{1+i}a) {title}', loc = 'left', fontsize = LARGE_SIZE)
+    ax.set_ylabel('kappa', fontsize = MEDIUM_SIZE)
+    ax.set_xlabel('BO iteration', fontsize = MEDIUM_SIZE)
     ax.spines['right'].set_visible(False)
     ax.spines['top'].set_visible(False)
     ax.spines['left'].set_visible(False)
     ax.spines['bottom'].set_visible(False)
     ax.tick_params(axis = 'both',
-              width = 3, length = 4)
-    ax.legend()
+              width = 3, length = 4, labelsize = SMALL_SIZE)
+    ax.legend(fontsize = SMALL_SIZE)
     
     # W
     ax = axs[i,1]
@@ -191,16 +170,16 @@ for i in range(1,5):
             linestyle = 'dotted', label = 'range', linewidth = 3)
     ax.plot(x,least, color = 'grey', linestyle = 'dotted', linewidth = 3)
     title = folders[i][0]['name'].split('_')[0]
-    ax.set_title(f'{1+i}b) {title}', loc = 'left')
-    ax.set_ylabel('|w|')
-    ax.set_xlabel('BO iteration')
+    ax.set_title(f'{1+i}b) {title}', loc = 'left', fontsize = LARGE_SIZE)
+    ax.set_ylabel('|w|', fontsize = MEDIUM_SIZE)
+    ax.set_xlabel('BO iteration', fontsize = MEDIUM_SIZE)
     ax.spines['right'].set_visible(False)
     ax.spines['top'].set_visible(False)
     ax.spines['left'].set_visible(False)
     ax.spines['bottom'].set_visible(False)
     ax.tick_params(axis = 'both',
-              width = 3, length = 4)
-    ax.legend()
+              width = 3, length = 4, labelsize = SMALL_SIZE)
+    ax.legend(fontsize = SMALL_SIZE)
     
     # autocovariance
     ax = axs[i,2]
@@ -217,16 +196,16 @@ for i in range(1,5):
             linestyle = 'dotted', label = 'range', linewidth = 3)
     ax.plot(x,least, color = 'grey', linestyle = 'dotted', linewidth = 3)
     title = folders[i][0]['name'].split('_')[0]
-    ax.set_title(f'{1+i}c) {title}', loc = 'left')
-    ax.set_ylabel('autocovariance')
-    ax.set_xlabel('BO iteration')
+    ax.set_title(f'{1+i}c) {title}', loc = 'left', fontsize = LARGE_SIZE)
+    ax.set_ylabel('autocovariance', fontsize = MEDIUM_SIZE)
+    ax.set_xlabel('BO iteration', fontsize = MEDIUM_SIZE)
     ax.spines['right'].set_visible(False)
     ax.spines['top'].set_visible(False)
     ax.spines['left'].set_visible(False)
     ax.spines['bottom'].set_visible(False)
     ax.tick_params(axis = 'both',
-              width = 3, length = 4)
-    ax.legend()
+              width = 3, length = 4, labelsize = SMALL_SIZE)
+    ax.legend(fontsize = SMALL_SIZE)
 
     plt.savefig('results/figures/prior_heuristic_results_1_task.pdf')
 
@@ -243,16 +222,9 @@ a3b5 = load_folder('processed_data/a3b5', 'exp', 30)
 a1b2 = load_folder('processed_data/a1b2', 'exp', 30)
 
 fig, axs = plt.subplots(6,3,
-                        figsize = (5*5,6*5),
+                        figsize = (3*5,6*3),
                        sharey = 'all', sharex = 'all',
                        constrained_layout = True)
-plt.rc('font', size=SMALL_SIZE)          # controls default text sizes
-plt.rc('axes', titlesize=LARGE_SIZE)     # fontsize of the axes title
-plt.rc('axes', labelsize=MEDIUM_SIZE)    # fontsize of the x and y labels
-plt.rc('xtick', labelsize=MEDIUM_SIZE)    # fontsize of the tick labels
-plt.rc('ytick', labelsize=MEDIUM_SIZE)    # fontsize of the tick labels
-plt.rc('legend', fontsize=MEDIUM_SIZE)    # legend fontsize
-plt.rc('figure', titlesize=LARGE_SIZE)  # fontsize of the figure title
 folders = [a1b2, None, a1a3, a3b1, a3b2, a3b3, a3b4, a3b5]
 
 ### baselines
@@ -272,16 +244,16 @@ for ax, i, enum in zip(axs[0,:], range(3), ['a','b', 'c']):
                 linestyle = 'dotted', label = 'range', linewidth = 3)
         ax.plot(x,least, color = 'grey', linestyle = 'dotted', linewidth = 3)
         title = folders[i][0]['name'].split('_')[0]
-        ax.set_title(f'1{enum}) {title}', loc = 'left')
-        ax.set_ylabel('variance')
-        ax.set_xlabel('BO iteration')
+        ax.set_title(f'1{enum}) {title}', loc = 'left', fontsize = LARGE_SIZE)
+        ax.set_ylabel('variance', fontsize = MEDIUM_SIZE)
+        ax.set_xlabel('BO iteration', fontsize = MEDIUM_SIZE)
         ax.spines['right'].set_visible(False)
         ax.spines['top'].set_visible(False)
         ax.spines['left'].set_visible(False)
         ax.spines['bottom'].set_visible(False)
         ax.tick_params(axis = 'both',
-              width = 3, length = 4)
-        ax.legend()
+              width = 3, length = 4, labelsize = SMALL_SIZE)
+        ax.legend(fontsize = SMALL_SIZE)
 
 ### TL experiments
 
@@ -300,16 +272,16 @@ for i in range(3,8):
             linestyle = 'dotted', label = 'range', linewidth = 3)
     ax.plot(x,least, color = 'grey', linestyle = 'dotted', linewidth = 3)
     title = folders[i][0]['name'].split('_')[0]
-    ax.set_title(f'{i-1}a) {title}', loc = 'left')
-    ax.set_ylabel('HF autocovariance')
-    ax.set_xlabel('BO iteration')
+    ax.set_title(f'{i-1}a) {title}', loc = 'left', fontsize = LARGE_SIZE)
+    ax.set_ylabel('HF autocovariance', fontsize = MEDIUM_SIZE)
+    ax.set_xlabel('BO iteration', fontsize = MEDIUM_SIZE)
     ax.spines['right'].set_visible(False)
     ax.spines['top'].set_visible(False)
     ax.spines['left'].set_visible(False)
     ax.spines['bottom'].set_visible(False)
     ax.tick_params(axis = 'both',
-              width = 3, length = 4)
-    ax.legend()
+              width = 3, length = 4, labelsize = SMALL_SIZE)
+    ax.legend(fontsize = SMALL_SIZE)
     
     # W
     ax = axs[i-2,1]
@@ -326,16 +298,16 @@ for i in range(3,8):
             linestyle = 'dotted', label = 'range', linewidth = 3)
     ax.plot(x,least, color = 'grey', linestyle = 'dotted', linewidth = 3)
     title = folders[i][0]['name'].split('_')[0]
-    ax.set_title(f'{i-1}b) {title}', loc = 'left')
-    ax.set_ylabel('cross covariance')
-    ax.set_xlabel('BO iteration')
+    ax.set_title(f'{i-1}b) {title}', loc = 'left', fontsize = LARGE_SIZE)
+    ax.set_ylabel('cross covariance', fontsize = MEDIUM_SIZE)
+    ax.set_xlabel('BO iteration', fontsize = MEDIUM_SIZE)
     ax.spines['right'].set_visible(False)
     ax.spines['top'].set_visible(False)
     ax.spines['left'].set_visible(False)
     ax.spines['bottom'].set_visible(False)
     ax.tick_params(axis = 'both',
-              width = 3, length = 4)
-    ax.legend()
+              width = 3, length = 4, labelsize = SMALL_SIZE)
+    ax.legend(fontsize = SMALL_SIZE)
     
     # b
     ax = axs[i-2,2]
@@ -352,15 +324,15 @@ for i in range(3,8):
             linestyle = 'dotted', label = 'range', linewidth = 3)
     ax.plot(x,least, color = 'grey', linestyle = 'dotted', linewidth = 3)
     title = folders[i][0]['name'].split('_')[0]
-    ax.set_title(f'{i-1}c) {title}', loc = 'left')
-    ax.set_ylabel('LF autocovariance')
-    ax.set_xlabel('BO iteration')
+    ax.set_title(f'{i-1}c) {title}', loc = 'left', fontsize = LARGE_SIZE)
+    ax.set_ylabel('LF autocovariance', fontsize = MEDIUM_SIZE)
+    ax.set_xlabel('BO iteration', fontsize = MEDIUM_SIZE)
     ax.spines['right'].set_visible(False)
     ax.spines['top'].set_visible(False)
     ax.spines['left'].set_visible(False)
     ax.spines['bottom'].set_visible(False)
     ax.tick_params(axis = 'both',
-              width = 3, length = 4)
-    ax.legend()
+              width = 3, length = 4, labelsize = SMALL_SIZE)
+    ax.legend(fontsize = SMALL_SIZE)
     
     plt.savefig('results/figures/prior_heuristic_results_2_task.pdf')

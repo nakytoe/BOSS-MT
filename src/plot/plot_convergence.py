@@ -10,20 +10,13 @@ def plot_convergence_iter_time_distraction(folders, filename):
     convergence level
     """
     N = len(folders)
-    fig, axs = plt.subplots(N,3, figsize = (15,4*N),
+    fig, axs = plt.subplots(N, 3, figsize = (15,3*N),
                            sharey = 'all', sharex = 'col',
                            constrained_layout = True)
-    SMALL_SIZE = 20
-    MEDIUM_SIZE = 22
+    SMALL_SIZE = 15
+    MEDIUM_SIZE = 20
     LARGE_SIZE = 30
 
-    plt.rc('font', size=SMALL_SIZE)          # controls default text sizes
-    plt.rc('axes', titlesize=LARGE_SIZE)     # fontsize of the axes title
-    plt.rc('axes', labelsize=MEDIUM_SIZE)    # fontsize of the x and y labels
-    plt.rc('xtick', labelsize=MEDIUM_SIZE)    # fontsize of the tick labels
-    plt.rc('ytick', labelsize=MEDIUM_SIZE)    # fontsize of the tick labels
-    plt.rc('legend', fontsize=MEDIUM_SIZE)    # legend fontsize
-    plt.rc('figure', titlesize=LARGE_SIZE)  # fontsize of the figure title
     for i in range(N):
         
         ### BO iteration
@@ -44,7 +37,7 @@ def plot_convergence_iter_time_distraction(folders, filename):
             tolerances_lists.append(tolerances_list)
             times_lists.append(times_list)
         title = folder[0]['name'].split('_')[0]
-        ax.set_title(f'{i+1}a) {title}', loc = 'left')
+        ax.set_title(f'{i+1}a) {title}', loc = 'left', fontsize = LARGE_SIZE)
         ax.scatter(times, tolerances, marker = 'x',
                    color = 'blue', alpha = 0.5,
                     label = 'observation')
@@ -57,8 +50,8 @@ def plot_convergence_iter_time_distraction(folders, filename):
         ax.plot(times_mean, tolerances_mean, color = 'red',
              marker = 's', label = 'mean')
 
-        ax.set_xlabel('BO iteration')
-        ax.set_ylabel('GMP conv. (kcal/mol)')
+        ax.set_xlabel('BO iteration', fontsize = MEDIUM_SIZE)
+        ax.set_ylabel('GMP conv. (kcal/mol)', fontsize = MEDIUM_SIZE)
         ax.set_yscale('log')
         if i == 0:
             ax.legend()
@@ -80,7 +73,7 @@ def plot_convergence_iter_time_distraction(folders, filename):
             tolerances_lists.append(tolerances_list)
             times_lists.append(times_list)
         title = folder[0]['name'].split('_')[0]
-        ax.set_title(f'{i+1}b) {title}', loc = 'left')
+        ax.set_title(f'{i+1}b) {title}', loc = 'left', fontsize = LARGE_SIZE)
         ax.scatter(times, tolerances, marker = 'x',
                    color = 'blue', alpha = 0.5,
                     label = 'observation')
@@ -91,11 +84,11 @@ def plot_convergence_iter_time_distraction(folders, filename):
         tolerances_lists = np.array(tolerances_lists, dtype = float)
         tolerances_mean = np.nanmean(tolerances_lists, axis = 0)
         ax.plot(times_mean, tolerances_mean, 'r', marker = 's', label = 'mean')
-        ax.set_xlabel('1 core CPU time (s)')
-        ax.set_ylabel('GMP conv. (kcal/mol)')
+        ax.set_xlabel('CPU time (s)', fontsize = MEDIUM_SIZE)
+        ax.set_ylabel('GMP conv. (kcal/mol)', fontsize = MEDIUM_SIZE)
         ax.set_yscale('log')
         if i == 0:
-            ax.legend()
+            ax.legend(fontsize = SMALL_SIZE)
 
         ### Distraction rate
         # proportion of experiments that do not converge to a given tolerance level
@@ -116,7 +109,7 @@ def plot_convergence_iter_time_distraction(folders, filename):
             tolerances_lists.append(tolerances_list)
             times_lists.append(times_list)
         title = folder[0]['name'].split('_')[0]
-        ax.set_title(f'{i+1}c) {title}', loc = 'left')
+        ax.set_title(f'{i+1}c) {title}', loc = 'left', fontsize = LARGE_SIZE)
 
         times_lists = np.array(times_lists, dtype = float)
         distraction_rate = np.count_nonzero(np.isnan(times_lists), axis = 0)/len(times_lists)
@@ -126,8 +119,8 @@ def plot_convergence_iter_time_distraction(folders, filename):
         ax.barh(tolerances_mean, distraction_rate,
                 height = tolerances_mean*0.5, align='center',
                color = 'grey')
-        ax.set_xlabel('distraction rate')
-        ax.set_ylabel('GMP conv. (kcal/mol)')
+        ax.set_xlabel('distraction rate', fontsize = MEDIUM_SIZE)
+        ax.set_ylabel('GMP conv. (kcal/mol)', fontsize = MEDIUM_SIZE)
         ax.set_yscale('log')
         
 
@@ -137,7 +130,7 @@ def plot_convergence_iter_time_distraction(folders, filename):
         ax.spines['left'].set_visible(False)
         ax.spines['bottom'].set_visible(False)
         ax.tick_params(axis = 'both',
-              width = 3, length = 4)
+              width = 3, length = 4, labelsize = SMALL_SIZE)
         ax.set_ylim(0.0005, 10)
 
 

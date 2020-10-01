@@ -13,13 +13,7 @@ def plot_prior_sumstat_amplitude(filepath):
     ### plot mean and variance for heuristics
     np.random.seed(111)
     fig, axs = plt.subplots(2,4, figsize = (20,10), constrained_layout = True)
-    plt.rc('font', size=SMALL_SIZE)          # controls default text sizes
-    plt.rc('axes', titlesize=LARGE_SIZE)     # fontsize of the axes title
-    plt.rc('axes', labelsize=MEDIUM_SIZE)    # fontsize of the x and y labels
-    plt.rc('xtick', labelsize=MEDIUM_SIZE)    # fontsize of the tick labels
-    plt.rc('ytick', labelsize=MEDIUM_SIZE)    # fontsize of the tick labels
-    plt.rc('legend', fontsize=MEDIUM_SIZE)    # legend fontsize
-    plt.rc('figure', titlesize=LARGE_SIZE)  # fontsize of the figure title
+    
 
     amplitudes = [0.001,0.01,0.1,1,10,100, 1000]
     def sumstat(x):
@@ -112,39 +106,43 @@ def plot_prior_sumstat_amplitude(filepath):
                                 color = colors[i], marker = markers[i])
         first_round = False
     # titles
-    axs[0,0].set_title('autocovariance prior mean')
-    axs[0,1].set_title('autocovariance prior variance')
-    axs[1,0].set_title('cross covariance prior mean')
-    axs[1,1].set_title('autocovariance prior variance')
-    axs[0,2].set_title('autocovariance prior skewness')
-    axs[1,2].set_title('cross covariance prior skewness')
-    axs[0,3].set_title('autocovariance prior kurtosis')
-    axs[1,3].set_title('cross covariance prior kurtosis')
+    axs[0,0].set_title('autocovariance prior mean', fontsize = MEDIUM_SIZE)
+    axs[0,1].set_title('autocovariance prior variance', fontsize = MEDIUM_SIZE)
+    axs[1,0].set_title('cross covariance prior mean', fontsize = MEDIUM_SIZE)
+    axs[1,1].set_title('autocovariance prior variance', fontsize = MEDIUM_SIZE)
+    axs[0,2].set_title('autocovariance prior skewness', fontsize = MEDIUM_SIZE)
+    axs[1,2].set_title('cross covariance prior skewness', fontsize = MEDIUM_SIZE)
+    axs[0,3].set_title('autocovariance prior kurtosis', fontsize = MEDIUM_SIZE)
+    axs[1,3].set_title('cross covariance prior kurtosis', fontsize = MEDIUM_SIZE)
     # plot settings
     for ax, number in zip(axs[0,:], range(1,5)):
-        ax.set_title(f'{number}a)', loc = 'left')
-        ax.legend(title = 'heuristic', loc = 'upper left')
+        ax.set_title(f'{number}a)', loc = 'left', fontsize = MEDIUM_SIZE)
+        ax.legend(title = 'heuristic', loc = 'upper left', fontsize = SMALL_SIZE)
+        plt.setp(ax.legend().get_title(),fontsize=SMALL_SIZE)
         ax.set_xscale('log')
         ax.set_yscale('symlog')
-        ax.set_xlabel('expected amplitude')
+        ax.set_xlabel('expected amplitude', fontsize = SMALL_SIZE)
         ax.spines['bottom'].set_visible(False)
         ax.spines['left'].set_visible(False)
         ax.spines['right'].set_visible(False)
         ax.spines['top'].set_visible(False)
         ax.tick_params(axis = 'both',
-              width = 3, length = 4)
+              width = 3, length = 4,
+              labelsize = SMALL_SIZE)
     for ax, number in zip(axs[1,:], range(1,5)):
-        ax.set_title(f'{number}b)', loc = 'left')
-        ax.legend(title = 'heuristic', loc = 'upper left')
+        ax.set_title(f'{number}b)', loc = 'left', fontsize = MEDIUM_SIZE)
+        ax.legend(title = 'heuristic', loc = 'upper left', fontsize = SMALL_SIZE)
+        plt.setp(ax.legend().get_title(),fontsize=SMALL_SIZE)
         ax.set_xscale('log')
         ax.set_yscale('symlog')
-        ax.set_xlabel('expected amplitude')
+        ax.set_xlabel('expected amplitude', fontsize = SMALL_SIZE)
         ax.spines['bottom'].set_visible(False)
         ax.spines['left'].set_visible(False)
         ax.spines['right'].set_visible(False)
         ax.spines['top'].set_visible(False)
         ax.tick_params(axis = 'both',
-              width = 3, length = 4)
+              width = 3, length = 4,
+              labelsize = SMALL_SIZE)
     axs[0,2].set_yscale('linear')
     axs[1,2].set_yscale('linear')
     axs[0,3].set_yscale('linear')
@@ -163,13 +161,6 @@ def plot_priors_for_1_task(shape,amplitude,filepath):
                         sharey = 'row', sharex = 'all',
                         constrained_layout = True)
 
-    plt.rc('font', size=SMALL_SIZE)          # controls default text sizes
-    plt.rc('axes', titlesize=LARGE_SIZE)     # fontsize of the axes title
-    plt.rc('axes', labelsize=MEDIUM_SIZE)    # fontsize of the x and y labels
-    plt.rc('xtick', labelsize=MEDIUM_SIZE)    # fontsize of the tick labels
-    plt.rc('ytick', labelsize=MEDIUM_SIZE)    # fontsize of the tick labels
-    plt.rc('legend', fontsize=MEDIUM_SIZE)    # legend fontsize
-    plt.rc('figure', titlesize=LARGE_SIZE)  # fontsize of the figure title
 
     rate = 2/(amplitude**2)
     # reference Ga(a,b) pdf
@@ -183,7 +174,7 @@ def plot_priors_for_1_task(shape,amplitude,filepath):
     ax.hist(variance, 30, density = True,
             label = 'prior', color = 'blue')
     ax.plot(gammax, gammay, label = f'target', color = 'red', linestyle = 'dashed', linewidth = 3)
-    ax.legend(frameon = False)
+    ax.legend(frameon = False, fontsize = SMALL_SIZE)
 
     ax = axs[1]
     kappa = np.random.gamma(1, 1/rate, 1000 )
@@ -191,31 +182,32 @@ def plot_priors_for_1_task(shape,amplitude,filepath):
     v = kappa + w**2
     ax.hist(v, 30, density = True, label = 'prior',
         color = 'blue')
-    ax.set_title('3)', loc = 'left')
+    #ax.set_title('3)', loc = 'left', fontsize = LARGE_SIZE)
     ax.plot(gammax, gammay, label = f'target', color = 'red', linestyle = 'dashed', linewidth = 3)
-    ax.legend(frameon = False)
+    ax.legend(frameon = False, fontsize = SMALL_SIZE)
     # NORMAL SQUARED
     ax = axs[2]
     w = (np.random.normal(np.sqrt(shape/rate)*0.9, 1/(shape*np.sqrt(rate)), 1000))**2
     ax.hist(w, 30, density = True, label = 'prior',
         color = 'blue')
     ax.plot(gammax, gammay, label = f'target', color = 'red', linestyle = 'dashed', linewidth = 3)
-    ax.legend(frameon = False)
+    ax.legend(frameon = False, fontsize = SMALL_SIZE)
 
-    axs[0].set_ylabel('probability density')
+    axs[0].set_ylabel('probability density', fontsize = MEDIUM_SIZE)
     for ax, title in zip(axs, ['1) prior heuristic 1.1',
                             '2) prior heuristic 1.2',
                             '3) prior heuristic 1.3']):
-        ax.set_title(f'{title}', loc = 'left')
+        ax.set_title(f'{title}', loc = 'left', fontsize = LARGE_SIZE)
         ax.spines['bottom'].set_visible(False)
         ax.spines['left'].set_visible(False)
         ax.spines['right'].set_visible(False)
         ax.spines['top'].set_visible(False)
-        ax.set_xlabel('autocovariance')
+        ax.set_xlabel('autocovariance', fontsize = MEDIUM_SIZE)
         #ax.tick_params('x',labelrotation=45)
-        ax.set_xticks([0,100,200,300])
+        ax.set_xticks([0,100,200,300,400,500,600])
         ax.tick_params(axis = 'both',
-              width = 3, length = 4)
+              width = 3, length = 4,
+              labelsize = SMALL_SIZE)
     plt.savefig(filepath)
 
 def plot_priors_for_2_tasks(shape,amplitude,filepath):
@@ -239,7 +231,7 @@ def plot_priors_for_2_tasks(shape,amplitude,filepath):
     ax.hist(kappa + w1**2, 30, density = True,
             label = 'prior', color = 'blue')
     ax.plot(gammax, gammay, label = f'target', color = 'red', linestyle = 'dashed', linewidth = 3)
-    ax.legend(frameon = False)
+    ax.legend(frameon = False, fontsize = SMALL_SIZE)
     # 1b) cross covariance
     ax = axs[1,0]
     ax.hist(w1*w2,30, density = True,
@@ -255,7 +247,7 @@ def plot_priors_for_2_tasks(shape,amplitude,filepath):
     ax.hist(w1**2+kappa, 30, density = True, label = 'prior',
         color = 'blue')
     ax.plot(gammax, gammay, label = f'target', color = 'red', linestyle = 'dashed', linewidth = 3)
-    ax.legend(frameon = False)
+    ax.legend(frameon = False, fontsize = SMALL_SIZE)
     # 2b) cross covariance
     ax = axs[1,1]
     ax.hist(w1*w2, 30, density = True,
@@ -274,7 +266,7 @@ def plot_priors_for_2_tasks(shape,amplitude,filepath):
             label = 'prior',
         color = 'blue')
     ax.plot(gammax, gammay, label = f'target', color = 'red', linestyle = 'dashed', linewidth = 3)
-    ax.legend(frameon = False)
+    ax.legend(frameon = False, fontsize = SMALL_SIZE)
     # 3b) cross covariance
     ax = axs[1,2]
     ax.hist(w1*w2, 30, density = True, label = 'prior',
@@ -292,7 +284,7 @@ def plot_priors_for_2_tasks(shape,amplitude,filepath):
             label = 'prior',
         color = 'blue')
     ax.plot(gammax, gammay, label = f'target', color = 'red', linestyle = 'dashed', linewidth = 3)
-    ax.legend(frameon = False)
+    ax.legend(frameon = False, fontsize = SMALL_SIZE)
     # cross covariance
     ax = axs[1,3]
     ax.hist(w1*w2+w3*w4, 30, density = True,
@@ -300,36 +292,38 @@ def plot_priors_for_2_tasks(shape,amplitude,filepath):
         color = 'blue')
 
 
-    axs[0,0].set_ylabel('probability density')
-    axs[1,0].set_ylabel('probability density')
+    axs[0,0].set_ylabel('probability density', fontsize = MEDIUM_SIZE)
+    axs[1,0].set_ylabel('probability density', fontsize = MEDIUM_SIZE)
     for ax, number, title in zip(axs[0,:], range(1,5),
                             ['prior heuristic 2.1',
                             'prior heuristic 2.2',
                             'prior heuristic 2.3',
                             'prior heuristic 2.4']):
-        ax.set_title(f'{number}a) {title}', loc = 'left')
+        ax.set_title(f'{number}a) {title}', loc = 'left', fontsize = LARGE_SIZE)
         
         ax.spines['bottom'].set_visible(False)
         ax.spines['left'].set_visible(False)
         ax.spines['right'].set_visible(False)
         ax.spines['top'].set_visible(False)
-        ax.set_xlabel('autocovariance')
+        ax.set_xlabel('autocovariance', fontsize = MEDIUM_SIZE)
         #ax.tick_params('x',labelrotation=45)
         ax.tick_params(axis = 'both',
-              width = 3, length = 4)
+              width = 3, length = 4,
+              labelsize = SMALL_SIZE)
         
     for ax, number in zip(axs[1,:], range(1,5)):
-        ax.set_title(f'{number}b)', loc = 'left')
+        ax.set_title(f'{number}b)', loc = 'left', fontsize = LARGE_SIZE)
         ax.spines['bottom'].set_visible(False)
         ax.spines['left'].set_visible(False)
         ax.spines['right'].set_visible(False)
         ax.spines['top'].set_visible(False)
-        ax.legend(frameon = False)
-        ax.set_xlabel('cross covariance')
+        ax.legend(frameon = False, fontsize = SMALL_SIZE)
+        ax.set_xlabel('cross covariance', fontsize = MEDIUM_SIZE)
         #ax.tick_params('x',labelrotation=45)
         ax.set_xticks([-200,0,200,400])
         ax.tick_params(axis = 'both',
-              width = 3, length = 4)
+              width = 3, length = 4,
+              labelsize = SMALL_SIZE)
     plt.savefig(filepath)
 
 
