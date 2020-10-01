@@ -254,9 +254,10 @@ rule plot_tl_results:
         expand('processed_data/{raw_name}.json',
                 raw_name = RAW_NAME)
     output:
-        'results/figures/convergence_alanine2D_TL_random_init.pdf',
-        'results/figures/convergence_alanine2D_TL_BO_init.pdf',
+        'results/figures/convergence_alanine2D_TL_BO_random_init.pdf',
+        'results/figures/convergence_alanine2D_TL_BO_inorder_init.pdf',
         'results/figures/convergence_alanine2D_TL_sobol_init.pdf',
+        'results/figures/convergence_alanine2D_TL_random_init.pdf',
         'results/figures/convergence_alanine4D_TL_BO_init.pdf'
     run:
         # load plot configuration
