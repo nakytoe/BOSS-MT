@@ -145,7 +145,11 @@ rule sumstat:
         'results/figures/scatter_trellis_alanine4D.pdf',
         'results/figures/mean_acquisition_times.pdf',
         'results/tables/acquisition_time_ratios.tex',
-        'results/figures/TL_initialization_strategies.pdf'
+        'results/figures/TL_initialization_strategies.pdf',
+        'results/figures/baseline_convergence_alanine2D.pdf',
+        'results/tables/baseline_convergence_alanine2D.tex',
+        'results/figures/baseline_convergence_alanine4D.pdf',
+        'results/tables/baseline_convergence_alanine4D.tex'
     run:
         config = rw.load_yaml('src/config/analysis/', 'sumstat.yaml')
         # calculate summary statistics for sobol experiments
@@ -198,6 +202,17 @@ rule sumstat:
             folders.append([data])
         sumstat.plot_TL_initialization_strategies('results/figures/TL_initialization_strategies.pdf', folders)
         
+        # plot baseline convergence speeds & do statistical testing of the distributions
+        for namebase in config['baseline_convergence_speed'].keys():
+            folders = []
+            for expname in config['baseline_convergence_speed'][namebase]:
+                folder = []
+                for filename in PARSED_DICT[expname]:
+                    data = rw.load_json(f'processed_data/{expname}/',f'{filename}.json')
+                    folder.append(data)
+                folders.append(folder)
+            sumstat.baseline_convergence_speed(f'results/figures/{namebase}.pdf',
+                            f'results/tables/{namebase}.tex', folders)
 
 rule prior_hypothesis:
     """
@@ -258,7 +273,8 @@ rule plot_tl_results:
         'results/figures/convergence_alanine2D_TL_BO_inorder_init.pdf',
         'results/figures/convergence_alanine2D_TL_sobol_init.pdf',
         'results/figures/convergence_alanine2D_TL_random_init.pdf',
-        'results/figures/convergence_alanine4D_TL_BO_init.pdf'
+        'results/figures/convergence_alanine4D_TL_BO_inorder_init.pdf',
+        'results/figures/convergence_alanine4D_TL_BO_random_init.pdf'
     run:
         # load plot configuration
         def load_experiments(exp_name):
