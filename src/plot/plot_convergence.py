@@ -51,10 +51,9 @@ def plot_convergence_iter_time_distraction(folders, filename):
              marker = 's', label = 'mean')
 
         ax.set_xlabel('BO iteration', fontsize = MEDIUM_SIZE)
-        ax.set_ylabel('GMP conv. (kcal/mol)', fontsize = MEDIUM_SIZE)
+        ax.set_ylabel('GMP conv. (kcal/mol)', fontsize = SMALL_SIZE)
         ax.set_yscale('log')
-        if i == 0:
-            ax.legend()
+        ax.legend(fontsize = SMALL_SIZE)
         ### cpu time
         ax = axs[i,1]
         folder = folders[i]
@@ -85,10 +84,9 @@ def plot_convergence_iter_time_distraction(folders, filename):
         tolerances_mean = np.nanmean(tolerances_lists, axis = 0)
         ax.plot(times_mean, tolerances_mean, 'r', marker = 's', label = 'mean')
         ax.set_xlabel('CPU time (s)', fontsize = MEDIUM_SIZE)
-        ax.set_ylabel('GMP conv. (kcal/mol)', fontsize = MEDIUM_SIZE)
+        ax.set_ylabel('GMP conv. (kcal/mol)', fontsize = SMALL_SIZE)
         ax.set_yscale('log')
-        if i == 0:
-            ax.legend(fontsize = SMALL_SIZE)
+        ax.legend(fontsize = SMALL_SIZE)
 
         ### Distraction rate
         # proportion of experiments that do not converge to a given tolerance level
@@ -120,7 +118,7 @@ def plot_convergence_iter_time_distraction(folders, filename):
                 height = tolerances_mean*0.5, align='center',
                color = 'grey')
         ax.set_xlabel('distraction rate', fontsize = MEDIUM_SIZE)
-        ax.set_ylabel('GMP conv. (kcal/mol)', fontsize = MEDIUM_SIZE)
+        ax.set_ylabel('GMP conv. (kcal/mol)', fontsize = SMALL_SIZE)
         ax.set_yscale('log')
         
 
