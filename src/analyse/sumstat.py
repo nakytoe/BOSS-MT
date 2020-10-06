@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from scipy.stats import ks_2samp
 
 def get_exp_namebases(folders):
     """
@@ -247,7 +248,7 @@ def plot_TL_initialization_strategies(filename, folders):
                             sharex = 'row', sharey = 'row',
                         constrained_layout = True)
     titleadd  = ['random uniform', 'sobol', 'BO inorder', 'BO random']
-    N = 100 # how many points to include
+    N = 50 # how many points to include
     # loop through experiments
     for i in range(3):
         folder = folders[i]
@@ -273,12 +274,12 @@ def plot_TL_initialization_strategies(filename, folders):
 
         # Histogram of nearest neighbour distances
         ax = axs[1,i]
-        ax.hist(dist[:,0], color = 'blue', alpha = 0.5, density = True)
+        ax.hist(dist[:,0], color = 'blue', alpha = 0.5)
         ax.axvline(mean, color = 'red', linestyle = 'dashed', label = 'mean', linewidth = 3)
         ax.axvline(mode, color = 'black', linestyle = 'solid', label = 'median', linewidth = 3)
         ax.set_title(f'{i+1}b)', loc = 'left')
         ax.set_xlabel('nearest neighbour distance')
-        ax.set_ylabel('density')
+        ax.set_ylabel('count')
         ax.legend()
         
         # potential energy and nearest neighbour distance distance
@@ -323,13 +324,13 @@ def plot_TL_initialization_strategies(filename, folders):
     ax.set_ylabel('x1')
 
     ax = axs[1,3]
-    ax.hist(dist[:,0], color = 'blue', alpha = 0.5, density = True)
+    ax.hist(dist[:,0], color = 'blue', alpha = 0.5)
     ax.axvline(mean, color = 'red', linestyle = 'dashed', label = 'mean', linewidth = 3)
     ax.axvline(mode, color = 'black', linestyle = 'solid', label = 'median', linewidth = 3)
 
     ax.set_title(f'{i+1}b)', loc = 'left')
     ax.set_xlabel('nearest neighbour distance')
-    ax.set_ylabel('density')
+    ax.set_ylabel('count')
     ax.legend()
     ax = axs[2,3]
     ax.scatter(dist[:,0], dist[:,1], color = 'blue', alpha = 0.5)
@@ -339,3 +340,68 @@ def plot_TL_initialization_strategies(filename, folders):
     ax.set_ylabel('potential energy (kcal/mol)')
 
     plt.savefig(filename)
+
+# Baseline convergence distribution
+
+def baseline_convergence_speed(figname, tablename, baselines, tolerance = 0.1):
+    """
+    Plot convergence speeds of baselines to given tolerance level
+    additionally, test if the convergence speeds differ in BO iterations,
+    to measure if the landscape is different in complexity between different simulators
+    """
+    median = lambda x: np.sort(x)[int(len(x)/2)] if len(x)%2 else np.mean(np.sort(x)[int(len(x)/2):int(len(x)/2)+2])
+    N = len(baselines)
+    fig, axs = plt.subplots(2,3,figsize = (15, 8), sharey = 'all',
+                            constrained_layout = True)
+    SMALL_SIZE = 15
+    MEDIUM_SIZE = 20
+    LARGE_SIZE = 30
+    convergences = []
+    totaltimes = []
+    names = []
+    for i in range(N):
+        convergence_iters = []
+        convergence_time = []
+        # collect convergence iterations & cpu times
+        for exp in baselines[i]:
+            j = int(np.where(np.array(exp['tolerance_levels']) == tolerance)[0])
+            convergence_iters.append(exp['iterations_to_gmp_convergence'][j])
+            convergence_time.append(exp['totaltime_to_gmp_convergence'][j])
+        # plot histograms
+        for conv, ax in zip([convergence_iters, convergence_time], axs[:,i]):
+            ax.hist(conv, color = 'blue', alpha = 0.5)
+            # calculate and plot mean and median
+            mea = np.mean(conv)
+            med = median(conv)
+            ax.axvline(mea, color = 'red', linestyle = 'dashed', label = 'mean',
+                      linewidth = 3)
+            ax.axvline(med, color = 'black', label = 'median', linewidth = 3)
+            ax.legend(fontsize = SMALL_SIZE)
+        name = baselines[i][0]['name'].split('_')[0]
+        names.append(name)
+        axs[0,i].set_title(f'{i+1}a) {name}', loc = 'left', fontsize = LARGE_SIZE)
+        axs[0,i].set_xlabel('iterations to GMP convergence', fontsize = MEDIUM_SIZE)
+        axs[1,i].set_title(f'{i+1}b) {name}', loc = 'left', fontsize = LARGE_SIZE)
+        axs[1,i].set_xlabel('CPU time (s) to GMP convergence', fontsize = MEDIUM_SIZE)
+        # statistical tests
+        convergences.append(convergence_iters)
+        totaltimes.append(convergence_time)
+            
+    for ax in axs.flatten():
+        ax.spines['right'].set_visible(False)
+        ax.spines['top'].set_visible(False)
+        ax.spines['left'].set_visible(False)
+        ax.spines['bottom'].set_visible(False)
+        ax.tick_params(axis = 'both',
+              width = 3, length = 4, labelsize = SMALL_SIZE)
+    plt.savefig(figname)
+    # statistical testing to see if the distributions are different
+    # how difficult it is to find the minimum in each experiment
+    lines = ['task1 & task1 & convergence iterations KS-2S statistic & p-value \\\\']
+    for i in range(N):
+        for j in range(i+1, N):
+            dist_test = ks_2samp(sorted(convergences[i]), sorted(convergences[j]))
+            lines.append(f'{names[i]} & {names[j]} & {round(dist_test[0], 2)} & {round(dist_test[1],3)} \\\\')
+
+    with open(tablename, 'w') as f:
+        f.writelines(lines)
