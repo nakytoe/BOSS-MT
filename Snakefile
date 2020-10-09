@@ -285,6 +285,7 @@ rule plot_tl_results:
             return folder
         config = rw.load_yaml('src/config/plot/','plot_TL_results.yaml') 
         print(config)
+        tot_loss_table = None
         for plotname in config['plotnames'].keys():
             print(plotname)
             # load experiments
@@ -292,4 +293,20 @@ rule plot_tl_results:
             # load baselines
             baselines = [load_experiments(exp_name) for exp_name in config['plotnames'][plotname]['baselines']]
             # plot convergence
-            plot_TL_results.plot_TL_convergence(f'results/figures/convergence_{plotname}.pdf', experiments, baselines)
+            loss_table = plot_TL_results.plot_TL_convergence(f'results/figures/convergence_{plotname}.pdf', experiments, baselines)
+            if tot_loss_table is None:
+                tot_loss_table = loss_table
+            else:
+                tot_loss_table = np.concat([tot_loss_table, loss_table])
+        # TODO analyze tot loss table
+        # at least
+        #  - make a table where the loss function minima is listed for each experiment
+        #  - plot loss as function of search space dimension
+        #  - as function of secondary initpts
+        # do statistical testing:
+        #  - for 2D experiments to order the methods (e.g. ANOVA or something)
+        #  - repeat for 4D
+        #  - to test if increasing dimension increases the benefit (decreases loss)
+        #     -> (compare the loss functions / loss function minimas 
+        #         of 4D experiments and the 2D experiments that share an initialization strategy with them)
+        # finally save table to csv and tex

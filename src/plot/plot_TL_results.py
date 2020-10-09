@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 import json
 import matplotlib.pyplot as plt
 from scipy.stats import pearsonr
@@ -27,8 +28,59 @@ def loewner(A, B):
             ret = 0
         ret_list.append(ret)
     return ret_list
-        
 
+## compare each number of secondary initpts
+## to baseline with wilcoxon 2 sample signed rank test to see 
+## when TL is faster than the baseline, also collect the lowest, 
+## highest, median and mean expected improvement and their secondary initpts
+
+def indicator_loss(b_times, r_times, N = 10, alpha = 0.1, method = wilcoxon):
+    """
+    do wilxocon test to see if b_times - r_times median is less than 0
+    H0: it is
+    """
+    b = np.random.choice(b_times, size = N, replace = True)
+    r = np.random.choice(r_times, size = N, replace = True)
+    diff = b-r
+    diff = diff[diff != 0]
+    # is the median of the differences b-r less than zero
+    WX = method(diff, alternative = 'less', mode = 'exact')
+    if WX[1] < alpha:
+        # reject
+        return False
+    else:
+        return True
+
+def loss_function_table(c_speed, name):
+    """
+    Sample n convergence speed results from baseline (b_times)
+    and experiment with k secondary points (r_times)
+    With wilcoxon 2 sample signed rank test determine, 
+    if TL is faster than the baseline with that many secondary initpts
+    return true
+    else false
+    """
+    initpts_list = np.unique(c_speed[:,0]).reshape(-1,1)
+    initpts_list = initpts_list[initpts_list != 0] # remove baselines
+    b_times = c_speed[c_speed[:,0] == 0,1]
+    b_mean = np.mean(b_times)
+    faster = [] # which number of secondary initpts are faster than the baseline
+    for initpts in initpts_list:
+        r_times = c_speed[c_speed[:,0] == initpts, 1]
+        #median_ixd = np.argsort(r_times)[len(r_times)//2]
+        # add initpts, mean (loss function), wx test (indicator loss function) if faster than baseline
+        faster.append([initpts, round(np.mean(r_times)/b_mean, 2), indicator_loss(b_times, r_times)])
+    faster = np.array(faster).reshape(-1, 3)
+    ret = pd.DataFrame({'experiment':name,
+                        'secondary_initpts':faster[:,0],
+                       'mean_loss':faster[:,1],
+                       'wx_indicator_loss':faster[:,2]})
+    # normalize mean acquisition time
+    # loss function minima -> 
+    # plot loss function minima against number of secondary initpts
+    return ret
+        
+## plot convergence and collect loss function table
 def plot_TL_convergence(filename, experiment_folders, baseline_folders):
     """
     Plot for list of TL experiments:
@@ -45,7 +97,7 @@ def plot_TL_convergence(filename, experiment_folders, baseline_folders):
     SMALL_SIZE = 15
     MEDIUM_SIZE = 20
     LARGE_SIZE = 25
-
+    tot_loss_table = None
     for i in range(N):
         experiment = experiment_folders[i].copy()
         baseline = baseline_folders[i].copy()
@@ -176,7 +228,14 @@ def plot_TL_convergence(filename, experiment_folders, baseline_folders):
         title = f'{i+1}b) {expname}'
         axs[1,i].set_title(title, loc = 'left', fontsize = LARGE_SIZE)
 
-
+        # collect table of loss function values
+        c_speed = clean_rows
+        loss_table = loss_function_table(c_speed, expname)
+        
+        if tot_loss_table is None:
+            tot_loss_table = loss_table
+        else:
+            tot_loss_table = pd.concat([tot_loss_table,loss_table], axis = 0)
 
     axs[0,0].set_ylabel('BO iterations to GMP convergence', fontsize = SMALL_SIZE)
     axs[1,0].set_ylabel('CPU time to GMP convergence', fontsize = SMALL_SIZE)
@@ -198,4 +257,5 @@ def plot_TL_convergence(filename, experiment_folders, baseline_folders):
 
     plt.savefig(filename)
     
+    return tot_loss_table
     
