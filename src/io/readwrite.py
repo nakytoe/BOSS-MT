@@ -32,15 +32,16 @@ def textabline(row):
 def write_table_tex(table, filepath, colnames = None, rownames = None):
     lines = []
     with open(filepath, 'w') as f:
-        if rownames is not None:
-            lines.append(textabline(rownames))
-        if colnames is None:
+        if colnames is not None:
+            lines.append(textabline(colnames))
+        if rownames is None:
             for row in table:
                 row = ['{:.3f}'.format(val) for val in row]
                 lines.append(textabline(row))
         else:
-            for row, colname in zip(table, colnames):
+            for row, rowname in zip(table, rownames):
                 row = ['{:.3f}'.format(val) for val in row]
-                row.insert(0, colname)
-                lines.append(textabline(row))
+                row.insert(0, rowname)
+                line = textabline(row)
+                lines.append(line)
         f.writelines(lines)

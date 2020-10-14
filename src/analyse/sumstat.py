@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from scipy.stats import ks_2samp
+from scipy.stats import kruskal
+from scipy.stats import chi2
 
 def get_exp_namebases(folders):
     """
@@ -349,7 +350,7 @@ def baseline_convergence_speed(figname, tablename, baselines, tolerance = 0.1):
     additionally, test if the convergence speeds differ in BO iterations,
     to measure if the landscape is different in complexity between different simulators
     """
-    median = lambda x: np.sort(x)[int(len(x)/2)] if len(x)%2 else np.mean(np.sort(x)[int(len(x)/2):int(len(x)/2)+2])
+    median = lambda x: np.sort(x)[int(len(x)/2)] if len(x)%2 else np.mean(np.sort(x)[int(len(x)/2)-1:int(len(x)/2)+1])
     N = len(baselines)
     fig, axs = plt.subplots(2,3,figsize = (15, 8), sharey = 'all',
                             constrained_layout = True)
@@ -397,11 +398,19 @@ def baseline_convergence_speed(figname, tablename, baselines, tolerance = 0.1):
     plt.savefig(figname)
     # statistical testing to see if the distributions are different
     # how difficult it is to find the minimum in each experiment
-    lines = ['task1 & task1 & convergence iterations KS-2S statistic & p-value \\\\']
+    lines = ['exp1 & median1 & exp2 & median2 & mw test statistic & p-value & critical value & equal medians\\\\']
     for i in range(N):
         for j in range(i+1, N):
-            dist_test = ks_2samp(sorted(convergences[i]), sorted(convergences[j]))
-            lines.append(f'{names[i]} & {names[j]} & {round(dist_test[0], 2)} & {round(dist_test[1],3)} \\\\')
+            ksw_test = kruskal(convergences[i], convergences[j])
+            g = 2
+            deg_free = g-1
+            critical_value = chi2.ppf(ksw_test.pvalue, deg_free)
+            accepted = 'yes'
+            if ksw_test.statistic > critical_value:
+                accepted = 'no'
+            lines.append(f'{names[i]} & {median(convergences[i])} &{names[j]}' + \
+                    f' & {median(convergences[j])} & {round(ksw_test[0], 2)} ' + \
+                    f'& {round(ksw_test[1],3)} & {round(critical_value, 2)} & {accepted} \\\\')
 
     with open(tablename, 'w') as f:
         f.writelines(lines)

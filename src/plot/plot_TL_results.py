@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 import json
 import matplotlib.pyplot as plt
-from scipy.stats import pearsonr
+from scipy.stats import pearsonr, wilcoxon, mannwhitneyu
 import scipy.stats as ss
 from sklearn.linear_model import LinearRegression
 from sklearn.preprocessing import PolynomialFeatures
@@ -34,18 +34,20 @@ def loewner(A, B):
 ## when TL is faster than the baseline, also collect the lowest, 
 ## highest, median and mean expected improvement and their secondary initpts
 
-def indicator_loss(b_times, r_times, N = 10, alpha = 0.1, method = wilcoxon):
+def indicator_loss(b_times, r_times, N = None, alpha = 0.1, method = mannwhitneyu):
     """
     do wilxocon test to see if b_times - r_times median is less than 0
     H0: it is
     """
+    if N is None:
+        N = min([len(b_times), len(r_times)])*5
     b = np.random.choice(b_times, size = N, replace = True)
     r = np.random.choice(r_times, size = N, replace = True)
-    diff = b-r
-    diff = diff[diff != 0]
+    #diff = b-r
+    #diff = diff[diff != 0]
     # is the median of the differences b-r less than zero
-    WX = method(diff, alternative = 'less', mode = 'exact')
-    if WX[1] < alpha:
+    test = method(b,r, alternative = 'less')
+    if test[1] < alpha:
         # reject
         return False
     else:
@@ -74,7 +76,7 @@ def loss_function_table(c_speed, name):
     ret = pd.DataFrame({'experiment':name,
                         'secondary_initpts':faster[:,0],
                        'mean_loss':faster[:,1],
-                       'wx_indicator_loss':faster[:,2]})
+                       'indicator_loss':faster[:,2]})
     # normalize mean acquisition time
     # loss function minima -> 
     # plot loss function minima against number of secondary initpts

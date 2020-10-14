@@ -1,5 +1,6 @@
 
 import numpy as np
+import pandas as pd
 import src.io.readwrite as rw
 import src.parse.parse_BOSS_output as parse
 import src.parse.preprocess as preprocess
@@ -274,7 +275,9 @@ rule plot_tl_results:
         'results/figures/convergence_alanine2D_TL_sobol_init.pdf',
         'results/figures/convergence_alanine2D_TL_random_init.pdf',
         'results/figures/convergence_alanine4D_TL_BO_inorder_init.pdf',
-        'results/figures/convergence_alanine4D_TL_BO_random_init.pdf'
+        'results/figures/convergence_alanine4D_TL_BO_random_init.pdf',
+        'processed_data/loss_table.csv',
+        'results/tables/loss_table.tex'
     run:
         # load plot configuration
         def load_experiments(exp_name):
@@ -297,16 +300,27 @@ rule plot_tl_results:
             if tot_loss_table is None:
                 tot_loss_table = loss_table
             else:
-                tot_loss_table = np.concat([tot_loss_table, loss_table])
-        # TODO analyze tot loss table
-        # at least
-        #  - make a table where the loss function minima is listed for each experiment
-        #  - plot loss as function of search space dimension
-        #  - as function of secondary initpts
-        # do statistical testing:
-        #  - for 2D experiments to order the methods (e.g. ANOVA or something)
-        #  - repeat for 4D
-        #  - to test if increasing dimension increases the benefit (decreases loss)
-        #     -> (compare the loss functions / loss function minimas 
-        #         of 4D experiments and the 2D experiments that share an initialization strategy with them)
-        # finally save table to csv and tex
+                tot_loss_table = pd.concat([tot_loss_table, loss_table])
+        # save loss function to csv
+        tot_loss_table.to_csv('processed_data/loss_table.csv')
+        rw.write_table_tex(loss_table.values[:,1:],'results/tables/loss_table.tex',
+            colnames = loss_table.columns.values[1:].astype(str),
+            rownames = loss_table.values[:,0].astype(str))
+        
+rule evaluate_loss:
+    """
+    Plot and compare loss functions
+    """
+    input:
+        'processed_data/loss_table.csv',
+        'src/plot/plot_loss_functions.py'
+    output:
+        'results/figures/loss_minimas.pdf',
+        'results/figures/indicator_loss.pdf',
+        'results/figures/loss_boolean_conversion.pdf',
+        'results/tables/boolean_indicator_loss_confusion.txt',
+        'results/evaluate_loss.txt'
+    run:
+        outfiles = ' '.join(output)
+        os.system('touch results/evaluate_loss.txt')
+        os.system(f'python3 src/plot/plot_loss_functions.py {input[0]} {outfiles} >> results/evaluate_loss.txt')
