@@ -277,7 +277,8 @@ rule plot_tl_results:
         'results/figures/convergence_alanine4D_TL_BO_inorder_init.pdf',
         'results/figures/convergence_alanine4D_TL_BO_random_init.pdf',
         'processed_data/loss_table.csv',
-        'results/tables/loss_table.tex'
+        'results/tables/loss_table.tex',
+        'results/tables/loss_table_minimas.tex'
     run:
         # load plot configuration
         def load_experiments(exp_name):
@@ -303,9 +304,24 @@ rule plot_tl_results:
                 tot_loss_table = pd.concat([tot_loss_table, loss_table])
         # save loss function to csv
         tot_loss_table.to_csv('processed_data/loss_table.csv')
-        rw.write_table_tex(loss_table.values[:,1:],'results/tables/loss_table.tex',
-            colnames = loss_table.columns.values[1:].astype(str),
-            rownames = loss_table.values[:,0].astype(str))
+        # group and aggregate minimum values of loss function table
+        tot_loss_table
+        grouped_table = tot_loss_table.groupby('experiment')
+        min_table = grouped_table.agg(min_loss = ('mean_loss', min))
+        res = tot_loss_table.join(min_table, on = 'experiment', how = 'left')
+        res = res[res['min_loss'] == res['mean_loss']].sort_values(by = 'experiment').drop('mean_loss', 1)
+        # save min loss function table to tex
+        with open('results/tables/loss_table_minimas.tex', 'w') as f:
+            head = res.columns
+            f.write(f'{head[0]} & {head[1]} & {head[3]} \\\\\n')
+            for row in res.values:
+                f.write(f'{str(row[0])} & {int(row[1])} & {round(row[3], 2)}  \\\\\n')
+        # save the tot loss function table to tex
+        with open('results/tables/loss_table.tex', 'w') as f:
+            head = tot_loss_table.columns
+            f.write(f'{head[0]} & {head[1]} & {head[2]} & {head[3]} \\\\\n')
+            for row in tot_loss_table.values:
+                f.write(f'{str(row[0])} & {int(row[1])} & {round(row[2], 2)} & {int(row[3])} \\\\\n')
         
 rule evaluate_loss:
     """
