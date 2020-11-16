@@ -25,11 +25,48 @@ for rawname in RAW_NAME:
     else:
         PARSED_DICT[exp_folder].append(exp)
 ## RULES
-rule all:
-    input:
+rule all: # this rule determines the dependencies of the pipeline
+    # from the outputs, it determines the rules and order of execution
+    input: # list all outputs of the pipeline
         expand('processed_data/{raw_name}.json',
                 raw_name = RAW_NAME),
-        'results/tables/sobol_sumstat.tex'
+        'results/tables/sobol_sumstat.tex',
+        'results/tables/covariance_alanine2D.tex',
+        'results/tables/covariance_alanine4D.tex',
+        'results/figures/scatter_trellis_alanine2D.pdf',
+        'results/figures/scatter_trellis_alanine4D.pdf',
+        'results/figures/mean_acquisition_times.pdf',
+        'results/tables/acquisition_time_ratios.tex',
+        'results/figures/TL_initialization_strategies.pdf',
+        'results/figures/baseline_convergence_alanine2D.pdf',
+        'results/tables/baseline_convergence_alanine2D.tex',
+        'results/figures/baseline_convergence_alanine4D.pdf',
+        'results/tables/baseline_convergence_alanine4D.tex',
+        "results/figures/prior_hypothesis_1_task_shape_2_amplitude_10.pdf",
+        "results/figures/prior_hypothesis_2_task_shape_2_amplitude_10.pdf",
+        "results/figures/prior_hypothesis_sumstat_amplitude.pdf",
+        "results/figures/prior_heuristic_results_1_task.pdf",
+        "results/figures/prior_heuristic_results_2_task.pdf",
+        "results/figures/random_sobol_init_variance_variability.pdf",
+        "results/figures/prior_selection_convergence_1_task.pdf",
+        "results/figures/prior_selection_convergence_2_task.pdf",
+        "results/figures/prior_selection_convergence_random_sobol.pdf",
+        'results/figures/convergence_alanine2D_TL_BO_random_init.pdf',
+        'results/figures/convergence_alanine2D_TL_BO_inorder_init.pdf',
+        'results/figures/convergence_alanine2D_TL_sobol_init.pdf',
+        'results/figures/convergence_alanine2D_TL_random_init.pdf',
+        'results/figures/convergence_alanine4D_TL_BO_inorder_init.pdf',
+        'results/figures/convergence_alanine4D_TL_BO_random_init.pdf',
+        'processed_data/loss_table.csv',
+        'results/tables/loss_table.tex',
+        'results/tables/loss_table_minimas.tex',
+        'results/figures/loss_minimas.pdf',
+        'results/figures/indicator_loss.pdf',
+        'results/figures/loss_boolean_conversion.pdf',
+        'results/tables/boolean_indicator_loss_confusion.txt',
+        'results/evaluate_loss.txt'
+
+
         
 # UNPREPROCESSED boss.out
         # detect folders
