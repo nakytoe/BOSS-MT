@@ -28,8 +28,8 @@ for rawname in RAW_NAME:
 rule all: # this rule determines the dependencies of the pipeline
     # from the outputs, it determines the rules and order of execution
     input: # list all outputs of the pipeline
-        expand('processed_data/{raw_name}.json',
-                raw_name = RAW_NAME),
+        #expand('processed_data/{raw_name}.json',
+        #        raw_name = RAW_NAME),
         'results/tables/sobol_sumstat.tex',
         'results/tables/covariance_alanine2D.tex',
         'results/tables/covariance_alanine4D.tex',
@@ -67,12 +67,10 @@ rule all: # this rule determines the dependencies of the pipeline
         'results/evaluate_loss.txt'
 
 
-        
-# UNPREPROCESSED boss.out
-        # detect folders
 
 
-# parse data from boss.out
+# parse data from raw data (boss.out)
+# this has to be done manually (snakemake parse_and_preprocess)
 rule parse_and_preprocess:
     input:
         'src/config/parse_and_preprocess/preprocess.yaml',
