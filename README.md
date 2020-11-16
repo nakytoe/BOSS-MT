@@ -4,9 +4,9 @@ Wellcome to BOSS-MT. This repo contains the data analysis scripts used in my 202
 
 The folder structure is the following:
 
-- data: Raw experiment data. Scripts for running BOSS experiments, inputs, outputs, molecular simulation scripts etc. Not version controlled.
+- data: Raw experiment data. Scripts for running BOSS experiments, inputs, outputs, molecular simulation scripts etc. Not version controlled. The data is compressed in a tar file (experiments.tgz). To uncompress the raw data, use <\code>tar -xvf experiments.tgz<\code>. WARNING: the uncompressed raw data requires 100GB of free disc space!
 
-- processed_data: The raw data will be parsed here in json format for analysis.
+- processed_data: Raw data (boss.out files) parsed to json format for analysis.
 
 - results: figures and tables created by the analysis scripts are created here.
 
@@ -14,7 +14,6 @@ The folder structure is the following:
 
 - doc: The thesis.
 
-- demo: Demo notebooks.
 
 ## Reproducing the analysis
 
