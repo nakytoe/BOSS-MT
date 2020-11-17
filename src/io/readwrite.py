@@ -30,6 +30,9 @@ def textabline(row):
     line = f'{line} \\\\ \n'
     return line
 def write_table_tex(table, filepath, colnames = None, rownames = None):
+    """
+    write latex table
+    """
     lines = []
     with open(filepath, 'w') as f:
         if colnames is not None:

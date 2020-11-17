@@ -10,10 +10,12 @@ import src.plot.plot_TL_results as plot_TL_results
 import os
 import matplotlib.pyplot as plt
 
+"""
+This file is used to manage input-output dependensies of the analysis
+scripts of my thesis, and run the analysis
+"""
 
-# define all inputs and outputs
-
-# RAW boss.out
+# Parse out experiment folders and file names
 RAW_wildcard = glob_wildcards('data/experiments/{raw_name}/boss.out')
 RAW_NAME = RAW_wildcard.raw_name
 PARSED_DICT = {}
@@ -25,11 +27,15 @@ for rawname in RAW_NAME:
     else:
         PARSED_DICT[exp_folder].append(exp)
 ## RULES
-rule all: # this rule determines the dependencies of the pipeline
-    # from the outputs, it determines the rules and order of execution
+rule all:
+    """
+    this rule determines the dependencies of the pipeline
+    from the outputs, it determines the rules and order of execution
+    """
     input: # list all outputs of the pipeline
         #expand('processed_data/{raw_name}.json',
-        #        raw_name = RAW_NAME),
+        #        raw_name = RAW_NAME), 
+        # # TODO: uncomment above if you have unpacked raw data and want to run preprocessing
         'results/tables/sobol_sumstat.tex',
         'results/tables/covariance_alanine2D.tex',
         'results/tables/covariance_alanine4D.tex',
@@ -69,15 +75,18 @@ rule all: # this rule determines the dependencies of the pipeline
 
 
 
-# parse data from raw data (boss.out)
-# this has to be done manually (snakemake parse_and_preprocess)
+
 rule parse_and_preprocess:
-    input:
+    """
+    parse data from raw data (boss.out) to json format
+    this has to be done manually (snakemake parse_and_preprocess)
+    """
+    input: # raw data
         'src/config/parse_and_preprocess/preprocess.yaml',
         expand('data/experiments/{raw_name}/boss.out',
                 raw_name = RAW_NAME)
         
-    output:
+    output: # json files
         expand('processed_data/{raw_name}.json',
                 raw_name = RAW_NAME)
     run:
@@ -168,7 +177,9 @@ rule parse_and_preprocess:
                     rw.save_json(data, f'processed_data/{folder}/',f'{filename}.json')
             
 rule sumstat:
-    # calculate summary statistics for the experiments
+    """
+    calculate summary statistics for the experiments
+    """
     input:
         'src/config/analysis/sumstat.yaml',
         expand('processed_data/{raw_name}.json',
@@ -212,10 +223,12 @@ rule sumstat:
             print(names)
             # covariance
             covariance_matrix = sumstat.calculate_covariance(explist)
-            rw.write_table_tex(covariance_matrix, f'results/tables/covariance_{saveto}.tex', colnames = names, rownames = names)
+            rw.write_table_tex(covariance_matrix, f'results/tables/covariance_{saveto}.tex',
+                colnames = names, rownames = names)
             # Pearson's correlation coefficient
             corr_matrix = sumstat.calculate_correlation(explist)
-            rw.write_table_tex(corr_matrix, f'results/tables/correlation_{saveto}.tex', colnames = names, rownames = names)
+            rw.write_table_tex(corr_matrix, f'results/tables/correlation_{saveto}.tex',
+                colnames = names, rownames = names)
             # plot scatter trellis, to verify that pearsons is a valid measure of correlation
             sumstat.plot_y_scatter_trellis(explist, f'results/figures/scatter_trellis_{saveto}.pdf')
         
@@ -252,7 +265,7 @@ rule sumstat:
 
 rule prior_hypothesis:
     """
-    visualize prior hypothesis
+    visualize prior heuristic hypothesis
     independent from experiment data
     """
     output:
