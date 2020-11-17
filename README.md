@@ -4,7 +4,7 @@ Wellcome to BOSS-MT. This repo contains the data analysis scripts used in my 202
 
 The folder structure is the following:
 
-- data: Raw experiment data. Scripts for running BOSS experiments, inputs, outputs, molecular simulation scripts etc. Not version controlled. The data is compressed in a tar file (experiments.tgz). To uncompress the raw data, use <\code>tar -xvf experiments.tgz<\code>. WARNING: the uncompressed raw data requires 100GB of free disc space!
+- data: Raw experiment data. Scripts for running BOSS experiments, inputs, outputs, molecular simulation scripts etc. Not version controlled. The data is compressed in a tar file (experiments.tgz). To uncompress the raw data, use <code>tar -xvf experiments.tgz</code>. WARNING: the uncompressed raw data requires 100GB of free disc space!
 
 - processed_data: Raw data (boss.out files) parsed to json format for analysis.
 
@@ -18,8 +18,8 @@ It is assumed that the user is familiar with the thesis work.
 Each folder in data / processed data contains output of one experiment. Each experiment is named with a 4 character code as follows:
 ![Naming of the experiments](visuals/naming_experiments.png)
 Most experiments contain multiple BOSS runs. Each boss run is named exp_N, where N is a running number. The settings in all runs under same experiment are equal, but the number of secondary data, and the initialization data itself, may vary for statistics depending on the experiment.\
-Processed data is in json format. You can load data of each run to python dictionary with python json module using <\code>json.load(filepath<\code>.
-The setup for each experiment run can be seen from "boss.in" keyword. Relevant settings are also listed under their own keywords. Use <\code>.keys()<\code> function to list all the keywords for a setup.
+Processed data is in json format. You can load data of each run to python dictionary with python json module using <code>json.load(filepath)</code>.
+The setup for each experiment run can be seen from "boss.in" keyword. Relevant settings are also listed under their own keywords. Use <code>.keys()</code> function to list all the keywords for a setup.
 
 ## Reproducing the analysis
 
