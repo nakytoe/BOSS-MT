@@ -1,6 +1,6 @@
 # Accelerating Bayesian Optimization Structure Search with Transfer Learning
 
-Wellcome to BOSS-MT. This repo contains the data analysis scripts used in my 2020 M.Sc. thesis 'Accelerating Bayesian Optimization Structure Search with Transfer Learning'.
+Wellcome to BOSS-MT. This repo contains the data analysis scripts used in my 2020 M.Sc. thesis 'Accelerating Bayesian Optimization Structure Search with Transfer Learning'. The purpose of this repository is to allow verifying and reproducing the results of my thesis work. This is not a user manual for using transfer learning with BOSS. See the BOSS project (references in the thesis) for further information on BOSS use.
 
 The folder structure is the following:
 
@@ -12,8 +12,14 @@ The folder structure is the following:
 
 - src: Analysis scripts and configuration files.
 
-- doc: The thesis.
+## Understanding the experiments
 
+It is assumed that the user is familiar with the thesis work.
+Each folder in data / processed data contains output of one experiment. Each experiment is named with a 4 character code as follows:
+![Naming of the experiments](visuals/naming_experiments.png)
+Most experiments contain multiple BOSS runs. Each boss run is named exp_N, where N is a running number. The settings in all runs under same experiment are equal, but the number of secondary data, and the initialization data itself, may vary for statistics depending on the experiment.\
+Processed data is in json format. You can load data of each run to python dictionary with python json module using <\code>json.load(filepath<\code>.
+The setup for each experiment run can be seen from "boss.in" keyword. Relevant settings are also listed under their own keywords. Use <\code>.keys()<\code> function to list all the keywords for a setup.
 
 ## Reproducing the analysis
 
@@ -33,6 +39,7 @@ To clean all outputs, run\
 <code>snakemake --delete-all-output</code>.
 Parsing the data and running the analysis takes about 15 minutes.
 
+## Citing the work
 To cite, use:
 
 Sten, N. A. 2020. 'Accelerating Bayesian Optimization Structure Search with Transfer Learning'. M.Sc. Thesis. Aalto University. Espoo, Finland. DOI/URN.\
