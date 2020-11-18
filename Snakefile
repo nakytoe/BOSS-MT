@@ -16,16 +16,24 @@ scripts of my thesis, and run the analysis
 """
 
 # Parse out experiment folders and file names
-RAW_wildcard = glob_wildcards('data/experiments/{raw_name}/boss.out')
-RAW_NAME = RAW_wildcard.raw_name
-PARSED_DICT = {}
-for rawname in RAW_NAME:
-    exp_folder = rawname.split('/')[0]
-    exp = rawname.split('/')[1]
-    if exp_folder not in PARSED_DICT:
-        PARSED_DICT[exp_folder] = [exp]
-    else:
-        PARSED_DICT[exp_folder].append(exp)
+try:
+    PARSED_DICT = rw.load_json('','processed_data/parsed_dict.json')
+    RAW_NAME = rw.load_json('','processed_data/raw_name.json')
+    print("using parsed dict from processed data!")
+except:
+    try:
+        RAW_wildcard = glob_wildcards('data/experiments/{raw_name}/boss.out')
+        RAW_NAME = RAW_wildcard.raw_name
+        PARSED_DICT = {}
+        for rawname in RAW_NAME:
+            exp_folder = rawname.split('/')[0]
+            exp = rawname.split('/')[1]
+            if exp_folder not in PARSED_DICT:
+                PARSED_DICT[exp_folder] = [exp]
+            else:
+                PARSED_DICT[exp_folder].append(exp)
+    except:
+        raise ValueError("Please uncompress the raw data to generate the folder structure, and try again.")
 ## RULES
 rule all:
     """
@@ -88,8 +96,14 @@ rule parse_and_preprocess:
         
     output: # json files
         expand('processed_data/{raw_name}.json',
-                raw_name = RAW_NAME)
+                raw_name = RAW_NAME),
+        'processed_data/parsed_dict.json',
+        'processed_data/raw_name.json'
+        
     run:
+        # save PARSED_DICT (the file structure dictionary)
+        rw.save_json(PARSED_DICT, 'processed_data/', 'parsed_dict.json')
+        rw.save_json(RAW_NAME, 'processed_data/', 'raw_name.json')
         # parse
         for infile, rawname, outfile in zip(input[1:], RAW_NAME, output):
             outfile = f'{outfile}'
