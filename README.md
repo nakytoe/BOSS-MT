@@ -16,7 +16,7 @@ The folder structure is the following:
 
 ## Understanding the experiments
 
-Each folder in data / processed data contains output of one experiment. Each experiment is named with a 4 character code as follows:
+Each folder in processed data contains parsed outputs of one experiment. Each experiment is named with a 4 character code as follows:
 ![Naming of the experiments](visuals/naming_experiments.png)
 Most experiments contain multiple BOSS runs. Each boss run is named exp_N, where N is a running number. The settings in all runs under same experiment are equal, but the number of secondary data, and the initialization data itself, may vary for statistics depending on the experiment.\
 Processed data is in json format. You can load data of each run to python dictionary with python json module using <code>json.load(filepath)</code>.
