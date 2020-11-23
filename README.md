@@ -10,7 +10,7 @@ The folder structure is the following:
 
 - results: figures and tables created by the analysis scripts are created here.
 
-- src: Analysis scripts and configuration files.
+- src: Analysis scripts and config files.
 
 - visuals: repository visualization
 
