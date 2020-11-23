@@ -31,7 +31,7 @@ To run the analysis pipeline, copy clone this repository\
 install [anaconda](https://www.anaconda.com) virtual environment with the [requirements](https://github.com/NuuttiSten/BOSS-MT/blob/master/requirements.txt)\
 <code>conda create --name stenthesis --file requirements.txt </code>,\
 launch the environment\
-<code>conda activate stenthesis></code>\
+<code>conda activate stenthesis</code>\
 and run Snakemake with\
 <code>snakemake</code>.\
 Parsed data is saved under <code>processed_data/</code>.\
