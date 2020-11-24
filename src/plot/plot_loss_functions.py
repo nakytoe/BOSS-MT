@@ -9,6 +9,7 @@ import sys
 
 np.random.seed(328)
 
+# command line call parameters
 args = sys.argv[1:]
 
 loss_table_path = args[0]
@@ -19,6 +20,7 @@ confusion_matrix_path = args[4]
 
 loss_table = pd.read_csv(loss_table_path)
 
+# for the plots
 SMALL_SIZE = 15
 MEDIUM_SIZE = 20
 LARGE_SIZE = 25

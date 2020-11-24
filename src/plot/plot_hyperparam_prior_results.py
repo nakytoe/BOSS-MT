@@ -92,7 +92,6 @@ a2a4 = load_folder('processed_data/a2a4', 'exp', 30)
 
 fig, axs = plt.subplots(5,3,
                         figsize = (3*5,5*3),
-                       sharey = 'all', sharex = 'all',
                        constrained_layout = True)
 folders = [a1a3, a2a1, a2a2, a2a3, a2a4]
 
